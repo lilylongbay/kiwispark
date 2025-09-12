@@ -1,0 +1,20 @@
+{
+  "home": {
+    "title": "Home",
+    "subtitle": "New Zealand's Premier Skills Learning Platform"
+  },
+  "auth": {
+    "signin": {
+      "title": "Sign In",
+      "subtitle": "Welcome back to SkillHub NZ"
+    },
+    "signup": {
+      "title": "Sign Up",
+      "subtitle": "Join SkillHub NZ today"
+    }
+  },
+  "dashboard": {
+    "title": "Dashboard",
+    "subtitle": "Your learning journey starts here"
+  }
+}

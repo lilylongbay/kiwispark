@@ -1,0 +1,12 @@
+{
+  "appName": "SkillHub NZ",
+  "description": "新西兰技能学习平台",
+  "welcome": "欢迎来到SkillHub NZ",
+  "getStarted": "开始编辑",
+  "saveAndSee": "保存并立即查看更改",
+  "deployNow": "立即部署",
+  "readDocs": "阅读文档",
+  "learn": "学习",
+  "examples": "示例",
+  "goToNextjs": "访问 nextjs.org →"
+}

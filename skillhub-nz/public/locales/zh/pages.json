@@ -1,0 +1,20 @@
+{
+  "home": {
+    "title": "首页",
+    "subtitle": "新西兰领先的技能学习平台"
+  },
+  "auth": {
+    "signin": {
+      "title": "登录",
+      "subtitle": "欢迎回到SkillHub NZ"
+    },
+    "signup": {
+      "title": "注册",
+      "subtitle": "立即加入SkillHub NZ"
+    }
+  },
+  "dashboard": {
+    "title": "仪表板",
+    "subtitle": "您的学习之旅从这里开始"
+  }
+}
