@@ -11,6 +11,16 @@ interface CoachDetailsPageProps {
   }>;
 }
 
+// Generate static params for static export
+export async function generateStaticParams() {
+  return [
+    { locale: 'zh', id: 'demo-coach-1' },
+    { locale: 'en', id: 'demo-coach-1' },
+    { locale: 'zh', id: 'demo-coach-2' },
+    { locale: 'en', id: 'demo-coach-2' },
+  ];
+}
+
 export default async function CoachDetailsPage({ params }: CoachDetailsPageProps) {
   const { id } = await params;
 

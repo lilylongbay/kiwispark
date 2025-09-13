@@ -3,31 +3,19 @@ import { CoachesPageClient } from '@/components/coaches/CoachesPageClient';
 import { CoachesErrorPage } from '@/components/coaches/CoachesErrorPage';
 import type { CoachSearchParams } from '@/types/domain';
 
-interface CoachesPageProps {
-  searchParams: Promise<{
-    specialty?: string;
-    location?: string;
-    sort?: string;
-    page?: string;
-    search?: string;
-    minRating?: string;
-    maxHourlyRate?: string;
-  }>;
+// Generate static params for locales
+export async function generateStaticParams() {
+  return [
+    { locale: 'zh' },
+    { locale: 'en' }
+  ];
 }
 
-export default async function CoachesPage({ searchParams }: CoachesPageProps) {
-  // 等待搜索参数
-  const resolvedSearchParams = await searchParams;
-  
-  // 解析搜索参数
+export default async function CoachesPage() {
+  // 使用默认参数进行静态渲染
   const params: CoachSearchParams = {
-    specialty: resolvedSearchParams.specialty,
-    location: resolvedSearchParams.location,
-    sortBy: (resolvedSearchParams.sort as 'newest' | 'rating' | 'hourlyRate') || 'rating',
+    sortBy: 'rating',
     sortOrder: 'desc',
-    minRating: resolvedSearchParams.minRating ? Number(resolvedSearchParams.minRating) : undefined,
-    maxHourlyRate: resolvedSearchParams.maxHourlyRate ? Number(resolvedSearchParams.maxHourlyRate) : undefined,
-    search: resolvedSearchParams.search,
     limit: 12
   };
 
@@ -44,7 +32,7 @@ export default async function CoachesPage({ searchParams }: CoachesPageProps) {
         hasMore={coachesResult.hasMore}
         lastDocId={coachesResult.lastDocId}
         specialties={specialties}
-        currentParams={resolvedSearchParams}
+        currentParams={{}}
       />
     );
   } catch (error) {

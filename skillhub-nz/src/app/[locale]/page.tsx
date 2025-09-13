@@ -2,6 +2,14 @@ import { demoCourses, demoCoaches, demoCategories, demoUsers } from '@/lib/seed-
 import { HomeCourseList } from '@/components/courses/HomeCourseList';
 import Link from "next/link";
 
+// Generate static params for locales
+export async function generateStaticParams() {
+  return [
+    { locale: 'zh' },
+    { locale: 'en' }
+  ];
+}
+
 export default async function Home() {
   // 直接使用演示数据，确保首页始终有内容展示
   const coursesWithDetails = demoCourses.map(course => {

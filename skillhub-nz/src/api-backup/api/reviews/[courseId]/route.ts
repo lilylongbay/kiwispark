@@ -38,14 +38,14 @@ export async function GET(
     }
 
     // 获取用户信息
-    const userIds = [...new Set(reviewsSnapshot.docs.map(doc => doc.data().userId))];
+    const userIds = [...new Set(reviewsSnapshot.docs.map((doc: any) => doc.data().userId))];
     const usersSnapshot = await adminFirestore()
       .collection('users')
       .where('__name__', 'in', userIds)
       .get();
 
     const usersMap = new Map();
-    usersSnapshot.docs.forEach(doc => {
+    usersSnapshot.docs.forEach((doc: any) => {
       const userData = doc.data();
       usersMap.set(doc.id, {
         displayName: userData.displayName,
@@ -54,7 +54,7 @@ export async function GET(
     });
 
     // 组合评论和用户信息
-    const reviews: ReviewWithUser[] = reviewsSnapshot.docs.map(doc => {
+    const reviews: ReviewWithUser[] = reviewsSnapshot.docs.map((doc: any) => {
       const reviewData = doc.data() as ReviewDoc;
       const user = usersMap.get(reviewData.userId) || {
         displayName: '匿名用户',

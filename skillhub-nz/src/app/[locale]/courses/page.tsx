@@ -13,31 +13,26 @@ const serializeCourseData = (courses: CourseListItem[]) => {
   }));
 };
 
-interface CoursesPageProps {
-  searchParams: Promise<{
-    category?: string;
-    sort?: string;
-    page?: string;
-    search?: string;
-    level?: string;
-    minPrice?: string;
-    maxPrice?: string;
-  }>;
+// Generate static params for locales
+export async function generateStaticParams() {
+  return [
+    { locale: 'zh' },
+    { locale: 'en' }
+  ];
 }
 
-export default async function CoursesPage({ searchParams }: CoursesPageProps) {
-  // 等待搜索参数
-  const resolvedSearchParams = await searchParams;
+export default async function CoursesPage() {
+  // 使用默认参数进行静态渲染
   
   // 解析搜索参数
   const params: CourseSearchParams = {
-    categoryId: resolvedSearchParams.category,
-    sortBy: (resolvedSearchParams.sort as 'newest' | 'rating' | 'price') || 'newest',
+    categoryId: undefined,
+    sortBy: 'newest',
     sortOrder: 'desc',
-    level: resolvedSearchParams.level as 'beginner' | 'intermediate' | 'advanced',
-    minPrice: resolvedSearchParams.minPrice ? Number(resolvedSearchParams.minPrice) : undefined,
-    maxPrice: resolvedSearchParams.maxPrice ? Number(resolvedSearchParams.maxPrice) : undefined,
-    search: resolvedSearchParams.search,
+    level: undefined,
+    minPrice: undefined,
+    maxPrice: undefined,
+    search: undefined,
     limit: 12
   };
 
@@ -54,7 +49,7 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
         hasMore={coursesResult.hasMore}
         lastDocId={coursesResult.lastDocId}
         categories={categories}
-        currentParams={resolvedSearchParams}
+        currentParams={{}}
       />
     );
   } catch (error) {

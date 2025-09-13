@@ -56,7 +56,7 @@ export async function POST(request: NextRequest) {
     const { reviewId, content } = validatedData;
 
     // 使用事务确保原子性
-    const result = await adminFirestore().runTransaction(async (transaction) => {
+    const result = await adminFirestore().runTransaction(async (transaction: any) => {
       // 获取评论文档
       const reviewRef = adminFirestore().collection('reviews').doc(reviewId);
       const reviewDoc = await transaction.get(reviewRef);
@@ -110,8 +110,8 @@ export async function POST(request: NextRequest) {
         userId,
         content,
         isFromCoach: true,
-        createdAt: Timestamp.now(),
-        updatedAt: Timestamp.now(),
+        createdAt: Timestamp.now() as any,
+        updatedAt: Timestamp.now() as any,
       };
 
       // 在事务中执行操作
@@ -133,7 +133,7 @@ export async function POST(request: NextRequest) {
 
     if (error instanceof z.ZodError) {
       return NextResponse.json(
-        { error: '数据验证失败', details: error.errors },
+        { error: '数据验证失败', details: error.issues },
         { status: 400 }
       );
     }

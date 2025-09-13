@@ -11,6 +11,16 @@ interface CourseDetailsPageProps {
   }>;
 }
 
+// Generate static params for static export
+export async function generateStaticParams() {
+  return [
+    { locale: 'zh', id: 'demo-course-1' },
+    { locale: 'en', id: 'demo-course-1' },
+    { locale: 'zh', id: 'demo-course-2' },
+    { locale: 'en', id: 'demo-course-2' },
+  ];
+}
+
 export default async function CourseDetailsPage({ params }: CourseDetailsPageProps) {
   const { id } = await params;
 
