@@ -173,7 +173,7 @@ export interface CourseDetails extends CourseListItem {
 export interface PaginationParams {
   limit?: number;
   startAfter?: string; // 文档ID，用于游标分页
-  sortBy?: 'newest' | 'rating' | 'price';
+  sortBy?: 'newest' | 'rating' | 'price' | 'hourlyRate';
   sortOrder?: 'asc' | 'desc';
 }
 

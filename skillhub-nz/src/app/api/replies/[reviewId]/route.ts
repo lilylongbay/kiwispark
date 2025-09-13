@@ -2,15 +2,12 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminFirestore } from '@/firebase/admin';
 import type { ReplyDoc } from '@/types/domain';
 
-interface RouteParams {
-  params: {
-    reviewId: string;
-  };
-}
-
-export async function GET(request: NextRequest, { params }: RouteParams) {
+export async function GET(
+  request: NextRequest, 
+  { params }: { params: Promise<{ reviewId: string }> }
+) {
   try {
-    const { reviewId } = params;
+    const { reviewId } = await params;
 
     if (!reviewId) {
       return NextResponse.json(
@@ -35,7 +32,7 @@ export async function GET(request: NextRequest, { params }: RouteParams) {
 
     // 获取回复者信息
     const repliesWithUsers = await Promise.all(
-      repliesQuery.docs.map(async (replyDoc) => {
+      repliesQuery.docs.map(async (replyDoc: any) => {
         const replyData = replyDoc.data() as ReplyDoc;
         
         // 获取回复者信息

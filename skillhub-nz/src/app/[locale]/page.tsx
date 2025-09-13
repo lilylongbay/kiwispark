@@ -15,7 +15,7 @@ export default async function Home() {
         id: coach.id,
         name: user.displayName,
         location: user.location,
-        avatar: user.avatar,
+        avatar: undefined, // demoUsers中没有avatar字段
         bio: user.bio,
         isVerified: user.isVerified,
         rating: coach.rating,
