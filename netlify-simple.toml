@@ -1,0 +1,16 @@
+[build]
+  # 简单的静态站点配置
+  command = "echo 'Static site - no build needed'"
+  publish = "."
+
+# 重定向根路径到测试页面
+[[redirects]]
+  from = "/"
+  to = "/netlify-test.html"
+  status = 302
+
+# 处理所有其他路径
+[[redirects]]
+  from = "/*"
+  to = "/netlify-test.html"
+  status = 200
