@@ -1,6 +1,7 @@
 'use client';
 
 import { useRouter, useSearchParams } from 'next/navigation';
+import { useTranslation } from 'react-i18next';
 
 interface CourseSortSelectProps {
   currentSort?: string;
@@ -9,6 +10,7 @@ interface CourseSortSelectProps {
 export function CourseSortSelect({ currentSort }: CourseSortSelectProps) {
   const router = useRouter();
   const searchParams = useSearchParams();
+  const { t } = useTranslation('pages');
 
   const handleSortChange = (sortBy: string) => {
     const params = new URLSearchParams(searchParams.toString());
@@ -19,7 +21,6 @@ export function CourseSortSelect({ currentSort }: CourseSortSelectProps) {
   const sortOptions = [
     { value: 'newest', label: '最新发布' },
     { value: 'rating', label: '评分最高' },
-    { value: 'price', label: '价格排序' },
   ];
 
   return (

@@ -1,5 +1,6 @@
 import { getServerUser } from '@/lib/auth-server';
 import { redirect } from 'next/navigation';
+import Link from 'next/link';
 
 export default async function DashboardPage() {
   const user = await getServerUser();
@@ -10,37 +11,46 @@ export default async function DashboardPage() {
 
   return (
     <div className="min-h-screen bg-gray-50 py-8">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div className="bg-white shadow rounded-lg p-6">
-          <h1 className="text-2xl font-bold text-gray-900 mb-4">
-            欢迎来到仪表板
+      <div className="max-w-4xl mx-auto px-4 sm:px-6 lg:px-8">
+        <div className="bg-white shadow rounded-lg p-8">
+          <h1 className="text-3xl font-bold text-gray-900 mb-6">
+            欢迎回来，{user.displayName}
           </h1>
           
-          <div className="space-y-4">
-            <div>
-              <h2 className="text-lg font-medium text-gray-900">用户信息</h2>
-              <div className="mt-2 space-y-2">
-                <p><span className="font-medium">姓名:</span> {user.displayName}</p>
-                <p><span className="font-medium">邮箱:</span> {user.email}</p>
-                <p><span className="font-medium">角色:</span> {user.role}</p>
-                <p><span className="font-medium">用户ID:</span> {user.uid}</p>
-              </div>
+          <div className="grid md:grid-cols-2 gap-8">
+            {/* 我的课程 */}
+            <div className="bg-blue-50 rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">我的课程</h2>
+              <p className="text-gray-600 mb-4">查看您已报名的课程</p>
+              <Link
+                href="/courses"
+                className="inline-block bg-blue-600 text-white px-4 py-2 rounded-lg hover:bg-blue-700 transition-colors"
+              >
+                浏览课程
+              </Link>
             </div>
 
-            <div className="pt-4 border-t">
-              <h2 className="text-lg font-medium text-gray-900">快速操作</h2>
-              <div className="mt-2 space-x-4">
-                <button className="bg-indigo-600 text-white px-4 py-2 rounded-md hover:bg-indigo-700">
-                  查看课程
-                </button>
-                <button className="bg-green-600 text-white px-4 py-2 rounded-md hover:bg-green-700">
-                  我的学习
-                </button>
-                {user.role === 'coach' && (
-                  <button className="bg-purple-600 text-white px-4 py-2 rounded-md hover:bg-purple-700">
-                    教练面板
-                  </button>
-                )}
+            {/* 学习进度 */}
+            <div className="bg-green-50 rounded-lg p-6">
+              <h2 className="text-xl font-semibold text-gray-900 mb-4">学习进度</h2>
+              <p className="text-gray-600 mb-4">跟踪您的学习进展</p>
+              <div className="text-sm text-gray-500">
+                功能开发中...
+              </div>
+            </div>
+          </div>
+
+          {/* 用户信息 */}
+          <div className="mt-8 pt-6 border-t border-gray-200">
+            <h3 className="text-lg font-medium text-gray-900 mb-3">账户信息</h3>
+            <div className="grid md:grid-cols-2 gap-4 text-sm">
+              <div>
+                <span className="font-medium text-gray-700">邮箱:</span>
+                <span className="ml-2 text-gray-600">{user.email}</span>
+              </div>
+              <div>
+                <span className="font-medium text-gray-700">角色:</span>
+                <span className="ml-2 text-gray-600">{user.role}</span>
               </div>
             </div>
           </div>

@@ -14,6 +14,8 @@ if (!isServer) {
       lng: 'zh', // default language
       fallbackLng: 'zh',
       debug: process.env.NODE_ENV === 'development',
+      defaultNS: 'common',
+      ns: ['common', 'nav', 'pages'],
       
       interpolation: {
         escapeValue: false, // React already does escaping

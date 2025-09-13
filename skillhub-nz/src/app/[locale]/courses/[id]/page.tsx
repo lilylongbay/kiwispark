@@ -1,37 +1,40 @@
 import { notFound } from 'next/navigation';
-import { getCourseDetails } from '@/lib/courses';
+import { getCourseDetailsServer } from '@/lib/courses-server';
 import { CourseDetailsView } from '@/components/courses/CourseDetailsView';
 import { CourseDetailsSkeleton } from '@/components/courses/CourseDetailsSkeleton';
+import { CourseErrorBoundary } from '@/components/courses/CourseErrorBoundary';
 import { Suspense } from 'react';
 
 interface CourseDetailsPageProps {
-  params: {
+  params: Promise<{
     id: string;
-  };
+  }>;
 }
 
 export default async function CourseDetailsPage({ params }: CourseDetailsPageProps) {
-  const { id } = params;
+  const { id } = await params;
 
   if (!id) {
     notFound();
   }
 
   try {
-    const course = await getCourseDetails(id);
+    const course = await getCourseDetailsServer(id);
 
     if (!course) {
       notFound();
     }
 
     return (
-      <div className="min-h-screen bg-gray-50">
-        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-          <Suspense fallback={<CourseDetailsSkeleton />}>
-            <CourseDetailsView course={course} />
-          </Suspense>
+      <CourseErrorBoundary>
+        <div className="min-h-screen bg-gray-50">
+          <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
+            <Suspense fallback={<CourseDetailsSkeleton />}>
+              <CourseDetailsView course={course} />
+            </Suspense>
+          </div>
         </div>
-      </div>
+      </CourseErrorBoundary>
     );
   } catch (error) {
     console.error('获取课程详情失败:', error);
@@ -42,7 +45,8 @@ export default async function CourseDetailsPage({ params }: CourseDetailsPagePro
 // 生成静态参数（可选，用于SEO）
 export async function generateMetadata({ params }: CourseDetailsPageProps) {
   try {
-    const course = await getCourseDetails(params.id);
+    const { id } = await params;
+    const course = await getCourseDetailsServer(id);
     
     if (!course) {
       return {

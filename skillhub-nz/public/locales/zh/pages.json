@@ -16,5 +16,48 @@
   "dashboard": {
     "title": "仪表板",
     "subtitle": "您的学习之旅从这里开始"
+  },
+  "courses": {
+    "title": "课程列表",
+    "subtitle": "发现适合您的技能提升课程",
+    "noCourses": "暂无课程",
+    "noCoursesDescription": "没有找到符合条件的课程，请尝试调整筛选条件。",
+    "foundCourses": "找到 {{count}} 门课程",
+    "loadingError": "加载课程失败",
+    "loadingErrorDescription": "抱歉，无法加载课程数据。请检查网络连接或稍后重试。",
+    "reload": "重新加载",
+    "filters": {
+      "title": "筛选器",
+      "searchPlaceholder": "输入课程名称或教练...",
+      "searchLabel": "搜索课程",
+      "categoryLabel": "课程分类",
+      "allCategories": "全部分类",
+      "levelLabel": "难度等级",
+      "allLevels": "全部等级",
+      "beginner": "初级",
+      "intermediate": "中级",
+      "advanced": "高级",
+      "priceRangeLabel": "价格范围 (NZD)",
+      "minPrice": "最低价格",
+      "maxPrice": "最高价格",
+      "clearAll": "清除全部",
+      "clearAllFilters": "清除所有筛选器"
+    },
+    "sort": {
+      "newest": "最新发布",
+      "rating": "评分最高",
+      "price": "价格排序"
+    },
+    "card": {
+      "hours": "小时",
+      "minutes": "分钟",
+      "hour": "小时",
+      "minute": "分钟",
+      "students": "学生",
+      "reviews": "评价",
+      "beginner": "初级",
+      "intermediate": "中级",
+      "advanced": "高级"
+    }
   }
 }

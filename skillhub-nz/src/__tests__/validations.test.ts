@@ -1,11 +1,12 @@
 import { describe, it, expect } from 'vitest';
-import { signupSchema, signinSchema } from '@/lib/validations';
+import { signupSchema, signinSchema } from '../lib/validations';
 
 describe('Signup Schema Validation', () => {
   it('should validate correct signup data', () => {
     const validData = {
       email: 'test@example.com',
       password: 'Password123',
+      confirmPassword: 'Password123',
       name: '张三',
     };
 
@@ -17,6 +18,7 @@ describe('Signup Schema Validation', () => {
     const invalidData = {
       email: 'invalid-email',
       password: 'Password123',
+      confirmPassword: 'Password123',
       name: '张三',
     };
 
@@ -31,6 +33,7 @@ describe('Signup Schema Validation', () => {
     const invalidData = {
       email: 'test@example.com',
       password: '123',
+      confirmPassword: '123',
       name: '张三',
     };
 
@@ -45,6 +48,7 @@ describe('Signup Schema Validation', () => {
     const invalidData = {
       email: 'test@example.com',
       password: 'password123',
+      confirmPassword: 'password123',
       name: '张三',
     };
 
@@ -59,6 +63,7 @@ describe('Signup Schema Validation', () => {
     const invalidData = {
       email: 'test@example.com',
       password: 'Password123',
+      confirmPassword: 'Password123',
       name: '',
     };
 
@@ -73,6 +78,7 @@ describe('Signup Schema Validation', () => {
     const invalidData = {
       email: 'test@example.com',
       password: 'Password123',
+      confirmPassword: 'Password123',
       name: 'John@Doe',
     };
 
@@ -87,6 +93,7 @@ describe('Signup Schema Validation', () => {
     const validData = {
       email: 'test@example.com',
       password: 'Password123',
+      confirmPassword: 'Password123',
       name: 'John Doe',
     };
 
@@ -98,6 +105,7 @@ describe('Signup Schema Validation', () => {
     const validData = {
       email: 'test@example.com',
       password: 'Password123',
+      confirmPassword: 'Password123',
       name: '李小明',
     };
 

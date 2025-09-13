@@ -1,9 +1,17 @@
-import { Suspense } from 'react';
-import { getCoursesList, getCategories } from '@/lib/courses';
-import { CourseList } from '@/components/courses/CourseList';
-import { CourseFilters } from '@/components/courses/CourseFilters';
-import { CourseListSkeleton } from '@/components/courses/CourseListSkeleton';
-import type { CourseSearchParams } from '@/types/domain';
+import { getCoursesListServer, getCategoriesServer } from '@/lib/courses-server';
+import { CoursesPageClient } from '@/components/courses/CoursesPageClient';
+import type { CourseSearchParams, CourseListItem } from '@/types/domain';
+
+// 序列化课程数据，将Firestore Timestamp转换为普通对象
+const serializeCourseData = (courses: CourseListItem[]) => {
+  return courses.map(course => ({
+    ...course,
+    createdAt: {
+      seconds: course.createdAt.seconds,
+      nanoseconds: course.createdAt.nanoseconds
+    }
+  }));
+};
 
 interface CoursesPageProps {
   searchParams: Promise<{
@@ -33,47 +41,50 @@ export default async function CoursesPage({ searchParams }: CoursesPageProps) {
     limit: 12
   };
 
-  // 并行获取数据
-  const [coursesResult, categories] = await Promise.all([
-    getCoursesList(params),
-    getCategories()
-  ]);
+  try {
+    // 并行获取数据
+    const [coursesResult, categories] = await Promise.all([
+      getCoursesListServer(params),
+      getCategoriesServer()
+    ]);
 
-  return (
-    <div className="min-h-screen bg-gray-50">
-      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
-        {/* 页面标题 */}
-        <div className="mb-8">
-          <h1 className="text-3xl font-bold text-gray-900">课程列表</h1>
-          <p className="mt-2 text-gray-600">
-            发现适合您的技能提升课程
+    return (
+      <CoursesPageClient 
+        courses={serializeCourseData(coursesResult.data)}
+        hasMore={coursesResult.hasMore}
+        lastDocId={coursesResult.lastDocId}
+        categories={categories}
+        currentParams={resolvedSearchParams}
+      />
+    );
+  } catch (error) {
+    console.error('获取课程数据失败:', error);
+    
+    // 返回错误页面
+    return (
+      <div className="min-h-screen bg-gray-50 flex items-center justify-center">
+        <div className="max-w-md w-full bg-white rounded-lg shadow-sm border border-gray-200 p-6 text-center">
+          <div className="mx-auto h-12 w-12 text-red-400 mb-4">
+            <svg fill="none" viewBox="0 0 24 24" stroke="currentColor">
+              <path strokeLinecap="round" strokeLinejoin="round" strokeWidth={2} d="M12 9v2m0 4h.01m-6.938 4h13.856c1.54 0 2.502-1.667 1.732-2.5L13.732 4c-.77-.833-1.964-.833-2.732 0L3.732 16.5c-.77.833.192 2.5 1.732 2.5z" />
+            </svg>
+          </div>
+          <h3 className="text-lg font-medium text-gray-900 mb-2">
+            加载课程失败
+          </h3>
+          <p className="text-gray-600 mb-4">
+            抱歉，无法加载课程数据。请检查网络连接或稍后重试。
           </p>
-        </div>
-
-        <div className="flex flex-col lg:flex-row gap-8">
-          {/* 侧边栏筛选器 */}
-          <div className="lg:w-64 flex-shrink-0">
-            <CourseFilters 
-              categories={categories}
-              currentParams={resolvedSearchParams}
-            />
-          </div>
-
-          {/* 主要内容区域 */}
-          <div className="flex-1">
-            <Suspense fallback={<CourseListSkeleton />}>
-              <CourseList 
-                courses={coursesResult.data}
-                hasMore={coursesResult.hasMore}
-                lastDocId={coursesResult.lastDocId}
-                currentParams={resolvedSearchParams}
-              />
-            </Suspense>
-          </div>
+          <button
+            onClick={() => window.location.reload()}
+            className="inline-flex items-center px-4 py-2 border border-transparent text-sm font-medium rounded-md text-white bg-blue-600 hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-offset-2 focus:ring-blue-500"
+          >
+            重新加载
+          </button>
         </div>
       </div>
-    </div>
-  );
+    );
+  }
 }
 
 // 生成静态参数（可选，用于SEO）

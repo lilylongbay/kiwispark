@@ -9,7 +9,7 @@ export interface UserDoc {
   email: string;
   displayName: string;
   photoURL?: string;
-  role: 'user' | 'coach' | 'admin';
+  role: 'user' | 'coach' | 'admin' | 'institution';
   bio?: string;
   location?: string;
   phoneNumber?: string;
@@ -193,4 +193,104 @@ export interface CourseSearchParams extends PaginationParams {
   minPrice?: number;
   maxPrice?: number;
   search?: string; // 搜索关键词
+}
+
+// 教练列表项类型（用于列表页面）
+export interface CoachListItem {
+  id: string;
+  name: string;
+  avatar?: string;
+  bio?: string;
+  specialties: string[];
+  experience: number;
+  rating: number;
+  totalReviews: number;
+  location?: string;
+  isActive: boolean;
+  // 联系方式（匿名用户时会被屏蔽）
+  contact?: {
+    email?: string;
+    phone?: string;
+  };
+}
+
+// 教练详情类型（用于详情页面）
+export interface CoachDetails extends CoachListItem {
+  fullBio?: string;
+  education: string[];
+  certifications: string[];
+  hourlyRate: number;
+  availability: {
+    monday: boolean;
+    tuesday: boolean;
+    wednesday: boolean;
+    thursday: boolean;
+    friday: boolean;
+    saturday: boolean;
+    sunday: boolean;
+  };
+  // 教练的课程
+  courses: CourseListItem[];
+  // 联系方式（登录用户可见完整信息）
+  contact: {
+    email?: string;
+    phone?: string;
+  };
+}
+
+// 教练搜索参数类型
+export interface CoachSearchParams extends PaginationParams {
+  specialty?: string;
+  location?: string;
+  minRating?: number;
+  maxHourlyRate?: number;
+  search?: string; // 搜索关键词
+}
+
+// 教育机构文档类型
+export interface InstitutionDoc {
+  id: string;
+  userId: string; // 关联到UserDoc
+  name: string;
+  description: string;
+  logo?: string; // 机构logo URL
+  website?: string;
+  address: string;
+  phoneNumber: string;
+  email: string;
+  licenseNumber?: string; // 教育许可证号
+  establishedYear: number;
+  specialties: string[]; // 专业领域
+  isActive: boolean;
+  isVerified: boolean; // 是否通过认证
+  createdAt: FirestoreTimestamp;
+  updatedAt: FirestoreTimestamp;
+}
+
+// 教育机构列表项类型
+export interface InstitutionListItem {
+  id: string;
+  name: string;
+  logo?: string;
+  description: string;
+  location: string;
+  specialties: string[];
+  isVerified: boolean;
+  totalCourses: number;
+  totalCoaches: number;
+  rating: number;
+  totalReviews: number;
+}
+
+// 教育机构详情类型
+export interface InstitutionDetails extends InstitutionListItem {
+  website?: string;
+  address: string;
+  phoneNumber: string;
+  email: string;
+  licenseNumber?: string;
+  establishedYear: number;
+  fullDescription: string;
+  courses: CourseListItem[];
+  coaches: CoachListItem[];
 }

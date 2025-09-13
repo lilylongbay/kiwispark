@@ -1,25 +1,34 @@
 'use client';
 
-import { useState, useEffect } from 'react';
+import { useState, useEffect, useRef } from 'react';
 import { useRouter } from 'next/navigation';
 import { signOut } from 'firebase/auth';
 import { auth } from '@/firebase/client';
 import Link from 'next/link';
 import { useTranslation } from 'react-i18next';
 import LanguageSwitcher from './LanguageSwitcher';
+import { useAuth } from '@/hooks/useAuth';
 
-interface HeaderProps {
-  user?: {
-    uid: string;
-    displayName: string;
-    role: string;
-  } | null;
-}
-
-export default function Header({ user }: HeaderProps) {
+export default function Header() {
   const [isDropdownOpen, setIsDropdownOpen] = useState(false);
   const { t, i18n } = useTranslation(['nav', 'common']);
   const router = useRouter();
+  const { user, loading } = useAuth();
+  const dropdownRef = useRef<HTMLDivElement>(null);
+
+  // 点击外部关闭下拉菜单
+  useEffect(() => {
+    const handleClickOutside = (event: MouseEvent) => {
+      if (dropdownRef.current && !dropdownRef.current.contains(event.target as Node)) {
+        setIsDropdownOpen(false);
+      }
+    };
+
+    document.addEventListener('mousedown', handleClickOutside);
+    return () => {
+      document.removeEventListener('mousedown', handleClickOutside);
+    };
+  }, []);
 
   const handleSignOut = async () => {
     try {
@@ -43,7 +52,7 @@ export default function Header({ user }: HeaderProps) {
         <div className="flex justify-between items-center h-16">
           {/* Logo */}
           <div className="flex items-center">
-            <Link href="/" className="text-xl font-bold text-indigo-600">
+            <Link href={`/${i18n.language}`} className="text-xl font-bold text-indigo-600">
               {t('common:appName')}
             </Link>
           </div>
@@ -51,23 +60,19 @@ export default function Header({ user }: HeaderProps) {
           {/* Navigation */}
           <nav className="hidden md:flex space-x-8">
             <Link
-              href="/courses"
+              href={`/${i18n.language}/courses`}
               className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
             >
-              {t('nav:courses')}
+              课程
             </Link>
-            <Link
-              href="/coaches"
-              className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
-            >
-              {t('nav:coaches')}
-            </Link>
-            <Link
-              href="/about"
-              className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
-            >
-              {t('nav:about')}
-            </Link>
+            {user && (
+              <Link
+                href={`/${i18n.language}/dashboard`}
+                className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
+              >
+                我的
+              </Link>
+            )}
           </nav>
 
           {/* Right side */}
@@ -76,13 +81,22 @@ export default function Header({ user }: HeaderProps) {
             <LanguageSwitcher currentLocale={i18n.language} />
 
             {/* User Menu */}
-            {user ? (
-              <div className="relative">
+            {loading ? (
+              <div className="flex items-center space-x-2">
+                <div className="w-8 h-8 bg-gray-200 rounded-full animate-pulse"></div>
+              </div>
+            ) : user ? (
+              <div className="relative" ref={dropdownRef}>
                 <button
                   onClick={() => setIsDropdownOpen(!isDropdownOpen)}
-                  className="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
+                  className="flex items-center space-x-2 text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors"
                 >
-                  <span>{user.displayName}</span>
+                  <div className="w-8 h-8 bg-indigo-100 rounded-full flex items-center justify-center">
+                    <span className="text-indigo-600 font-medium text-sm">
+                      {user.displayName.charAt(0).toUpperCase()}
+                    </span>
+                  </div>
+                  <span className="hidden sm:block">{user.displayName}</span>
                   <svg
                     className="w-4 h-4"
                     fill="none"
@@ -99,25 +113,22 @@ export default function Header({ user }: HeaderProps) {
                 </button>
 
                 {isDropdownOpen && (
-                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50">
+                  <div className="absolute right-0 mt-2 w-48 bg-white rounded-md shadow-lg py-1 z-50 border border-gray-100">
+                    <div className="px-4 py-2 border-b border-gray-100">
+                      <p className="text-sm font-medium text-gray-900">{user.displayName}</p>
+                      <p className="text-xs text-gray-500">{user.email}</p>
+                    </div>
                     <Link
-                      href="/dashboard"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      href={`/${i18n.language}/dashboard`}
+                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                       onClick={() => setIsDropdownOpen(false)}
                     >
-                      仪表板
-                    </Link>
-                    <Link
-                      href="/profile"
-                      className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
-                      onClick={() => setIsDropdownOpen(false)}
-                    >
-                      个人资料
+                      我的
                     </Link>
                     {user.role === 'coach' && (
                       <Link
-                        href="/dashboard/coach"
-                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                        href={`/${i18n.language}/coach/dashboard`}
+                        className="block px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                         onClick={() => setIsDropdownOpen(false)}
                       >
                         教练面板
@@ -126,7 +137,7 @@ export default function Header({ user }: HeaderProps) {
                     <hr className="my-1" />
                     <button
                       onClick={handleSignOut}
-                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100"
+                      className="block w-full text-left px-4 py-2 text-sm text-gray-700 hover:bg-gray-100 transition-colors"
                     >
                       登出
                     </button>
@@ -136,16 +147,16 @@ export default function Header({ user }: HeaderProps) {
             ) : (
               <div className="flex items-center space-x-2">
                 <Link
-                  href="/auth/signin"
-                  className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium"
+                  href={`/${i18n.language}/auth/signin`}
+                  className="text-gray-700 hover:text-indigo-600 px-3 py-2 text-sm font-medium transition-colors"
                 >
-                  {t('nav:signin')}
+                  登录
                 </Link>
                 <Link
-                  href="/auth/signup"
-                  className="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium"
+                  href={`/${i18n.language}/auth/signup`}
+                  className="bg-indigo-600 text-white hover:bg-indigo-700 px-4 py-2 rounded-md text-sm font-medium transition-colors"
                 >
-                  {t('nav:signup')}
+                  注册
                 </Link>
               </div>
             )}

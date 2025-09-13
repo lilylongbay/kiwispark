@@ -1,15 +1,26 @@
 import Link from 'next/link';
 import Image from 'next/image';
 import { Star, Clock, Users, MapPin } from 'lucide-react';
+import { useTranslation } from 'react-i18next';
 import type { CourseListItem } from '@/types/domain';
 
+// 序列化后的课程数据类型
+interface SerializedCourseListItem extends Omit<CourseListItem, 'createdAt'> {
+  createdAt: {
+    seconds: number;
+    nanoseconds: number;
+  };
+}
+
 interface CourseCardProps {
-  course: CourseListItem;
+  course: SerializedCourseListItem;
 }
 
 export function CourseCard({ course }: CourseCardProps) {
+  const { t } = useTranslation('pages');
+  
   const formatPrice = (price: number) => {
-    return new Intl.NumberFormat('zh-CN', {
+    return new Intl.NumberFormat('en-NZ', {
       style: 'currency',
       currency: 'NZD',
       minimumFractionDigits: 0,
@@ -20,9 +31,9 @@ export function CourseCard({ course }: CourseCardProps) {
     const hours = Math.floor(minutes / 60);
     const mins = minutes % 60;
     if (hours > 0) {
-      return mins > 0 ? `${hours}小时${mins}分钟` : `${hours}小时`;
+      return mins > 0 ? `${hours}${t('courses.card.hours')}${mins}${t('courses.card.minutes')}` : `${hours}${t('courses.card.hour')}`;
     }
-    return `${mins}分钟`;
+    return `${mins}${t('courses.card.minute')}`;
   };
 
   const getLevelColor = (level: string) => {
@@ -41,11 +52,11 @@ export function CourseCard({ course }: CourseCardProps) {
   const getLevelText = (level: string) => {
     switch (level) {
       case 'beginner':
-        return '初级';
+        return t('courses.card.beginner');
       case 'intermediate':
-        return '中级';
+        return t('courses.card.intermediate');
       case 'advanced':
-        return '高级';
+        return t('courses.card.advanced');
       default:
         return level;
     }

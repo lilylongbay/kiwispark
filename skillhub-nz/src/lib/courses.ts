@@ -233,7 +233,7 @@ const getDemoCoursesList = (params: CourseSearchParams = {}): PaginatedResult<Co
     sortOrder = 'desc'
   } = params;
 
-  let filteredCourses = demoCourses.filter(course => {
+  const filteredCourses = demoCourses.filter(course => {
     if (categoryId && course.categoryId !== categoryId) return false;
     if (coachId && course.coachId !== coachId) return false;
     if (level && course.level !== level) return false;
@@ -245,7 +245,7 @@ const getDemoCoursesList = (params: CourseSearchParams = {}): PaginatedResult<Co
   });
 
   // 排序
-  filteredCourses.sort((a, b) => {
+  const sortedCourses = [...filteredCourses].sort((a, b) => {
     switch (sortBy) {
       case 'newest':
         return sortOrder === 'desc' ? 
@@ -261,8 +261,8 @@ const getDemoCoursesList = (params: CourseSearchParams = {}): PaginatedResult<Co
   });
 
   // 分页
-  const paginatedCourses = filteredCourses.slice(0, limitCount);
-  const hasMore = filteredCourses.length > limitCount;
+  const paginatedCourses = sortedCourses.slice(0, limitCount);
+  const hasMore = sortedCourses.length > limitCount;
 
   // 转换为CourseListItem格式
   const courses: CourseListItem[] = paginatedCourses.map(course => {

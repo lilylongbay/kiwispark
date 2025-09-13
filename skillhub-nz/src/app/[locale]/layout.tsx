@@ -2,7 +2,6 @@ import type { Metadata } from 'next'
 import { notFound } from 'next/navigation'
 import { i18n } from '../../../next-i18next.config'
 import Header from '@/components/Header'
-import { getServerUser } from '@/lib/auth-server'
 import I18nProvider from '@/components/I18nProvider'
 
 export const metadata: Metadata = {
@@ -26,11 +25,9 @@ export default async function LocaleLayout({
   // Validate that the incoming `locale` parameter is valid
   if (!i18n.locales.includes(locale as any)) notFound()
 
-  const user = await getServerUser();
-
   return (
     <I18nProvider locale={locale}>
-      <Header user={user} />
+      <Header />
       <main>{children}</main>
     </I18nProvider>
   )

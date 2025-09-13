@@ -16,5 +16,48 @@
   "dashboard": {
     "title": "Dashboard",
     "subtitle": "Your learning journey starts here"
+  },
+  "courses": {
+    "title": "Course List",
+    "subtitle": "Discover courses that suit your skill development",
+    "noCourses": "No courses found",
+    "noCoursesDescription": "No courses match your criteria. Please try adjusting your filters.",
+    "foundCourses": "Found {{count}} courses",
+    "loadingError": "Failed to load courses",
+    "loadingErrorDescription": "Sorry, unable to load course data. Please check your network connection or try again later.",
+    "reload": "Reload",
+    "filters": {
+      "title": "Filters",
+      "searchPlaceholder": "Enter course name or instructor...",
+      "searchLabel": "Search courses",
+      "categoryLabel": "Course Category",
+      "allCategories": "All Categories",
+      "levelLabel": "Difficulty Level",
+      "allLevels": "All Levels",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced",
+      "priceRangeLabel": "Price Range (NZD)",
+      "minPrice": "Min Price",
+      "maxPrice": "Max Price",
+      "clearAll": "Clear All",
+      "clearAllFilters": "Clear All Filters"
+    },
+    "sort": {
+      "newest": "Newest",
+      "rating": "Highest Rated",
+      "price": "Price"
+    },
+    "card": {
+      "hours": "h",
+      "minutes": "m",
+      "hour": "h",
+      "minute": "m",
+      "students": "students",
+      "reviews": "reviews",
+      "beginner": "Beginner",
+      "intermediate": "Intermediate",
+      "advanced": "Advanced"
+    }
   }
 }

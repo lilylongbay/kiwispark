@@ -6,13 +6,15 @@ import {
   Users, 
   MapPin, 
   Calendar,
-  Award,
+  // Award,
   BookOpen,
   ArrowLeft,
   Share2,
   Heart
 } from 'lucide-react';
 import type { CourseDetails } from '@/types/domain';
+import ReviewSection from './ReviewSection';
+import { EnrollmentButton } from './EnrollmentButton';
 
 interface CourseDetailsViewProps {
   course: CourseDetails;
@@ -211,13 +213,9 @@ export function CourseDetailsView({ course }: CourseDetailsViewProps) {
             </div>
           )}
 
-          {/* 评价区域（占位符） */}
+          {/* 评价区域 */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">学员评价</h3>
-            <div className="text-center py-8 text-gray-500">
-              <Star className="w-12 h-12 mx-auto mb-4 text-gray-300" />
-              <p>评价功能即将上线，敬请期待！</p>
-            </div>
+            <ReviewSection courseId={course.id} courseCoachId={course.coach.id} />
           </div>
         </div>
 
@@ -229,68 +227,37 @@ export function CourseDetailsView({ course }: CourseDetailsViewProps) {
               <div className="text-3xl font-bold text-blue-600 mb-2">
                 {formatPrice(course.price)}
               </div>
-              <p className="text-gray-600">一次性付费，永久访问</p>
             </div>
 
-            <button className="w-full bg-blue-600 text-white py-3 px-4 rounded-lg font-medium hover:bg-blue-700 focus:outline-none focus:ring-2 focus:ring-blue-500 focus:ring-offset-2 transition-colors">
-              立即报名
-            </button>
-
-            <div className="mt-4 text-center">
-              <p className="text-sm text-gray-600">
-                已有 <span className="font-medium text-gray-900">{course.currentStudents}</span> 人报名
-              </p>
-            </div>
+            <EnrollmentButton courseId={course.id} price={course.price} />
           </div>
 
           {/* 教练信息 */}
           <div className="bg-white rounded-lg shadow-sm border border-gray-200 p-6">
-            <h3 className="text-lg font-semibold text-gray-900 mb-4">教练信息</h3>
+            <h3 className="text-lg font-semibold text-gray-900 mb-4">关于教练</h3>
             <div className="text-center">
-              <div className="w-16 h-16 bg-gray-200 rounded-full mx-auto mb-4"></div>
-              <h4 className="font-semibold text-gray-900 mb-1">{course.coach.name}</h4>
+              {/* 教练头像 */}
+              <div className="w-16 h-16 mx-auto mb-4">
+                <div className="w-16 h-16 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xl font-bold">
+                  {course.coach.name.charAt(0).toUpperCase()}
+                </div>
+              </div>
+              
+              <h4 className="font-semibold text-gray-900 mb-2 text-lg">{course.coach.name}</h4>
+              
               {course.coach.location && (
-                <div className="flex items-center justify-center text-sm text-gray-600 mb-2">
+                <div className="flex items-center justify-center text-sm text-gray-600 mb-3">
                   <MapPin className="w-4 h-4 mr-1" />
                   {course.coach.location}
                 </div>
               )}
-              <div className="flex items-center justify-center mb-3">
-                <Star className="w-4 h-4 text-yellow-400 fill-current" />
-                <span className="ml-1 text-sm font-medium text-gray-900">
-                  {course.coach.rating.toFixed(1)}
-                </span>
-                <span className="ml-1 text-sm text-gray-600">
-                  ({course.coach.totalReviews} 评价)
-                </span>
-              </div>
+              
+              {/* 教练简介 */}
               {course.coach.bio && (
-                <p className="text-sm text-gray-600 mb-4">{course.coach.bio}</p>
-              )}
-              <div className="space-y-2">
-                <div className="flex items-center justify-between text-sm">
-                  <span className="text-gray-600">教学经验</span>
-                  <span className="font-medium">{course.coach.experience} 年</span>
+                <div className="text-left mb-4">
+                  <p className="text-sm text-gray-700 leading-relaxed">{course.coach.bio}</p>
                 </div>
-                {course.coach.specialties.length > 0 && (
-                  <div>
-                    <span className="text-sm text-gray-600">专业领域</span>
-                    <div className="flex flex-wrap gap-1 mt-1">
-                      {course.coach.specialties.slice(0, 3).map((specialty, index) => (
-                        <span
-                          key={index}
-                          className="inline-flex items-center px-2 py-1 rounded text-xs font-medium bg-blue-100 text-blue-800"
-                        >
-                          {specialty}
-                        </span>
-                      ))}
-                    </div>
-                  </div>
-                )}
-              </div>
-              <button className="w-full mt-4 text-blue-600 text-sm font-medium hover:text-blue-800">
-                查看教练详情
-              </button>
+              )}
             </div>
           </div>
         </div>
