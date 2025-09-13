@@ -4,12 +4,24 @@
 
 [build.environment]
   NODE_VERSION = "18"
+  NEXT_PUBLIC_FIREBASE_API_KEY = "AIzaSyBEXwf9SCerk1XUSeWBlduL7nU-VbMxWu8"
+  NEXT_PUBLIC_FIREBASE_AUTH_DOMAIN = "kiwispark-80e5d.firebaseapp.com"
+  NEXT_PUBLIC_FIREBASE_PROJECT_ID = "kiwispark-80e5d"
+  NEXT_PUBLIC_FIREBASE_STORAGE_BUCKET = "kiwispark-80e5d.firebasestorage.app"
+  NEXT_PUBLIC_FIREBASE_MESSAGING_SENDER_ID = "287274562407"
+  NEXT_PUBLIC_FIREBASE_APP_ID = "1:287274562407:web:1fac7d76f212e3843035c2"
 
 # Redirect root to default locale
 [[redirects]]
   from = "/"
   to = "/zh/"
   status = 302
+
+# Handle static assets first
+[[redirects]]
+  from = "/_next/*"
+  to = "/_next/:splat"
+  status = 200
 
 # Handle locale routes
 [[redirects]]
@@ -22,14 +34,8 @@
   to = "/en/:splat"
   status = 200
 
-# Handle static assets
-[[redirects]]
-  from = "/_next/*"
-  to = "/_next/:splat"
-  status = 200
-
-# Fallback for SPA routing - redirect to default locale
+# Fallback - serve index.html for SPA routing
 [[redirects]]
   from = "/*"
-  to = "/zh/"
+  to = "/zh/index.html"
   status = 200
