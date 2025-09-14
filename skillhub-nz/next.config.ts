@@ -6,18 +6,19 @@ const nextConfig: NextConfig = {
     ignoreDuringBuilds: true,
   },
   
-  // Enable static export for Netlify
-  output: 'export',
-  trailingSlash: true,
-  
-  // Skip type checking during build for static export
-  typescript: {
-    ignoreBuildErrors: true,
-  },
+  // Enable static export only for production builds
+  ...(process.env.NODE_ENV === 'production' && {
+    output: 'export',
+    trailingSlash: true,
+    // Skip type checking during build for static export
+    typescript: {
+      ignoreBuildErrors: true,
+    },
+  }),
   
   // Disable image optimization for static export
   images: {
-    unoptimized: true,
+    unoptimized: process.env.NODE_ENV === 'production',
     remotePatterns: [
       {
         protocol: 'https',
