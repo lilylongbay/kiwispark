@@ -35,9 +35,10 @@ interface CourseData {
 
 interface ServerCourseCardProps {
   course: CourseData;
+  isFirst?: boolean;
 }
 
-export function ServerCourseCard({ course }: ServerCourseCardProps) {
+export function ServerCourseCard({ course, isFirst = false }: ServerCourseCardProps) {
   const formatPrice = (price: number) => {
     return `¥${price}`;
   };
@@ -71,6 +72,7 @@ export function ServerCourseCard({ course }: ServerCourseCardProps) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={isFirst}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">

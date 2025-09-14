@@ -1,59 +1,50 @@
-// 暂时注释掉 firebase-admin 导入以解决 Node.js 版本兼容性问题
-// import { initializeApp, getApps, cert, ServiceAccount } from 'firebase-admin/app';
-// import { getAuth } from 'firebase-admin/auth';
-// import { getFirestore } from 'firebase-admin/firestore';
+import { initializeApp, getApps, cert, type App } from 'firebase-admin/app'
+import { getAuth, type Auth } from 'firebase-admin/auth'
+import { getFirestore, type Firestore } from 'firebase-admin/firestore'
 
-// 懒加载单例模式
-let adminApp: any = null;
-let adminAuth: any = null;
-let adminFirestore: any = null;
+let appInstance: App | undefined
+let authInstance: Auth | undefined
+let firestoreInstance: Firestore | undefined
 
-const getAdminApp = () => {
-  if (!adminApp) {
-    // 模拟 Firebase Admin App 对象
-    adminApp = {
-      name: 'default',
-      options: {
-        projectId: process.env.FIREBASE_PROJECT_ID || 'demo-project',
-      }
-    };
+function getEnvPrivateKey(): string | undefined {
+  const raw = process.env.FIREBASE_PRIVATE_KEY
+  if (!raw) return undefined
+  // 兼容 Netlify / GitHub Actions 的换行转义
+  const unquoted = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw
+  return unquoted.replace(/\\n/g, '\n')
+}
+
+function ensureAdminApp(): App {
+  if (appInstance) return appInstance
+
+  const projectId = process.env.FIREBASE_PROJECT_ID
+  const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
+  const privateKey = getEnvPrivateKey()
+
+  if (!projectId || !clientEmail || !privateKey) {
+    throw new Error('Missing Firebase Admin credentials. Set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY')
   }
-  return adminApp;
-};
 
-const getAdminAuth = () => {
-  if (!adminAuth) {
-    // 模拟 Firebase Admin Auth 对象
-    adminAuth = {
-      verifyIdToken: async (token: string) => {
-        console.log('模拟验证 ID token:', token);
-        return { uid: 'demo-user', email: 'demo@example.com' };
-      }
-    };
+  appInstance = (getApps()[0]) ?? initializeApp({
+    credential: cert({
+      projectId,
+      clientEmail,
+      privateKey,
+    })
+  })
+  return appInstance
+}
+
+export function adminAuth(): Auth {
+  if (!authInstance) {
+    authInstance = getAuth(ensureAdminApp())
   }
-  return adminAuth;
-};
+  return authInstance
+}
 
-const getAdminFirestore = () => {
-  if (!adminFirestore) {
-    // 模拟 Firebase Admin Firestore 对象
-    adminFirestore = {
-      collection: (path: string) => ({
-        doc: (id: string) => ({
-          get: async () => ({ exists: false, data: () => null }),
-          set: async (data: any) => ({ id }),
-          update: async (data: any) => ({ id }),
-          delete: async () => ({ id })
-        }),
-        add: async (data: any) => ({ id: 'demo-id' }),
-        where: () => ({
-          get: async () => ({ docs: [], empty: true })
-        })
-      })
-    };
+export function adminFirestore(): Firestore {
+  if (!firestoreInstance) {
+    firestoreInstance = getFirestore(ensureAdminApp())
   }
-  return adminFirestore;
-};
-
-// 导出懒加载的实例
-export { getAdminAuth as adminAuth, getAdminFirestore as adminFirestore };
+  return firestoreInstance
+}

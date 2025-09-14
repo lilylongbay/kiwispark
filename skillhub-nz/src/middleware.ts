@@ -1,5 +1,4 @@
 import { NextRequest, NextResponse } from 'next/server';
-import { adminAuth } from '@/firebase/admin';
 
 export async function middleware(request: NextRequest) {
   const { pathname } = request.nextUrl;
@@ -12,44 +11,16 @@ export async function middleware(request: NextRequest) {
     );
   }
 
-  // 保护dashboard路由
+  // 保护dashboard路由（仅做会话cookie存在性检查，详细校验在服务端进行）
   if (pathname.startsWith('/dashboard')) {
     const sessionCookie = request.cookies.get('session');
 
     if (!sessionCookie?.value) {
       return NextResponse.redirect(new URL('/auth/signin', request.url));
     }
-
-    try {
-      // 验证token
-      await adminAuth().verifyIdToken(sessionCookie.value);
-    } catch (error) {
-      // Token无效，重定向到登录页
-      return NextResponse.redirect(new URL('/auth/signin', request.url));
-    }
   }
 
-  // 保护POST API路由（除了session API）
-  if (request.method === 'POST' && !pathname.startsWith('/api/session')) {
-    const sessionCookie = request.cookies.get('session');
-
-    if (!sessionCookie?.value) {
-      return NextResponse.json(
-        { error: 'Authentication required' },
-        { status: 401 }
-      );
-    }
-
-    try {
-      // 验证token
-      await adminAuth().verifyIdToken(sessionCookie.value);
-    } catch (error) {
-      return NextResponse.json(
-        { error: 'Invalid token' },
-        { status: 401 }
-      );
-    }
-  }
+  // 提示：对 API 的鉴权在各自的 Route Handler 中完成（服务端执行）
 
   return NextResponse.next();
 }
