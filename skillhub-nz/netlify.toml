@@ -1,5 +1,4 @@
 # Netlify 主项目配置 - 用于部署 skillhub-nz
-# 请将此文件重命名为 netlify.toml 并放置在 skillhub-nz 目录下
 
 [build]
   # 基础目录设置为 skillhub-nz
@@ -7,7 +6,7 @@
   # 构建命令
   command = "npm run build:netlify"
   # 发布目录设置为 Next.js 输出的 out 目录
-  publish = "skillhub-nz/out"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "18"
