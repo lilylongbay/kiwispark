@@ -46,6 +46,19 @@ export async function POST(request: NextRequest) {
   }
 }
 
+// 处理预检请求，避免某些环境下触发 405
+export async function OPTIONS() {
+  return new NextResponse(null, {
+    status: 204,
+    headers: {
+      'Allow': 'POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Origin': '*',
+      'Access-Control-Allow-Methods': 'POST, DELETE, OPTIONS',
+      'Access-Control-Allow-Headers': 'Content-Type, Authorization',
+    },
+  })
+}
+
 export async function DELETE() {
   try {
     // 清除cookie
