@@ -19,3 +19,9 @@
 
 [[plugins]]
   package = "@netlify/plugin-nextjs"
+
+# Ensure API routes are not shadowed by static redirects
+[[redirects]]
+  from = "/api/*"
+  to = "/.netlify/functions/next_api/:splat"
+  status = 200
