@@ -1,5 +1,4 @@
 import type { NextConfig } from 'next'
-import webpack from 'webpack'
 
 const nextConfig: NextConfig = {
   // Temporarily disable ESLint during build
@@ -44,6 +43,9 @@ const nextConfig: NextConfig = {
 
   // Fix packages importing `node:process` by providing browser polyfill
   webpack: (config) => {
+    // Lazy import to avoid TypeScript resolution at build-time
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { ProvidePlugin } = require('webpack')
     config.resolve = config.resolve || {}
     config.resolve.alias = {
       ...(config.resolve.alias || {}),
@@ -54,11 +56,7 @@ const nextConfig: NextConfig = {
       process: require.resolve('process/browser'),
     }
     config.plugins = config.plugins || []
-    config.plugins.push(
-      new webpack.ProvidePlugin({
-        process: 'process/browser',
-      })
-    )
+    config.plugins.push(new ProvidePlugin({ process: 'process/browser' }))
     return config
   },
 }

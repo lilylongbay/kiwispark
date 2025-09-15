@@ -2,6 +2,8 @@ import { NextRequest, NextResponse } from 'next/server';
 import { adminAuth } from '@/firebase/admin';
 import { cookies } from 'next/headers';
 
+export const runtime = 'nodejs'
+
 export async function POST(request: NextRequest) {
   try {
     const { idToken } = await request.json();
@@ -30,11 +32,16 @@ export async function POST(request: NextRequest) {
       success: true,
       uid: decodedToken.uid,
     });
-  } catch (error) {
-    console.error('Session creation error:', error);
+  } catch (error: any) {
+    console.error('Session creation error:', {
+      message: error?.message,
+      code: error?.code,
+      stack: error?.stack,
+    });
+    const status = error?.message?.includes('Missing Firebase Admin credentials') ? 500 : 401
     return NextResponse.json(
-      { error: 'Invalid token' },
-      { status: 401 }
+      { error: 'Invalid token or server credentials missing' },
+      { status }
     );
   }
 }

@@ -191,7 +191,8 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
   const toggleMode = () => {
     setMode(isSignIn ? 'signup' : 'signin');
     setError(null);
-    currentForm.reset();
+    signinForm.reset();
+    signupForm.reset();
   };
 
   return (
@@ -227,7 +228,7 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
 
           <form 
             className="space-y-6" 
-            onSubmit={currentForm.handleSubmit(handleEmailAuth)}
+            onSubmit={(isSignIn ? signinForm.handleSubmit(handleEmailAuth) : signupForm.handleSubmit(handleEmailAuth))}
           >
             {/* Name field (only for signup) */}
             {!isSignIn && (
@@ -256,15 +257,15 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
                 {t('auth.email')}
               </label>
               <input
-                {...currentForm.register('email')}
+                {...(isSignIn ? signinForm.register('email') : signupForm.register('email'))}
                 type="email"
                 autoComplete="email"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 placeholder={t('auth.emailPlaceholder')}
               />
-              {currentForm.formState.errors.email && (
+              {(isSignIn ? signinForm.formState.errors.email : signupForm.formState.errors.email) && (
                 <p className="mt-1 text-sm text-red-600">
-                  {currentForm.formState.errors.email.message}
+                  {(isSignIn ? signinForm.formState.errors.email : signupForm.formState.errors.email)?.message}
                 </p>
               )}
             </div>
@@ -275,15 +276,15 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
                 {t('auth.password')}
               </label>
               <input
-                {...currentForm.register('password')}
+                {...(isSignIn ? signinForm.register('password') : signupForm.register('password'))}
                 type="password"
                 autoComplete={isSignIn ? 'current-password' : 'new-password'}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-indigo-500 focus:border-indigo-500 transition-colors"
                 placeholder={t('auth.passwordPlaceholder')}
               />
-              {currentForm.formState.errors.password && (
+              {(isSignIn ? signinForm.formState.errors.password : signupForm.formState.errors.password) && (
                 <p className="mt-1 text-sm text-red-600">
-                  {currentForm.formState.errors.password.message}
+                  {(isSignIn ? signinForm.formState.errors.password : signupForm.formState.errors.password)?.message}
                 </p>
               )}
             </div>

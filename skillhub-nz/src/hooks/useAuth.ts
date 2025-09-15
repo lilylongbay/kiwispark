@@ -10,7 +10,7 @@ export interface AuthUser {
   uid: string;
   email: string;
   displayName: string;
-  role: 'student' | 'coach' | 'admin';
+  role: 'super_admin' | 'admin' | 'coach' | 'user' | 'institution' | 'suspended' | 'student';
   isVerified: boolean;
 }
 
@@ -32,7 +32,7 @@ export function useAuth() {
               uid: firebaseUser.uid,
               email: firebaseUser.email || '',
               displayName: userData.displayName || firebaseUser.displayName || '',
-              role: userData.role || 'student',
+              role: (userData.role as AuthUser['role']) || 'user',
               isVerified: userData.isVerified || false,
             });
           } else {
@@ -41,7 +41,7 @@ export function useAuth() {
               uid: firebaseUser.uid,
               email: firebaseUser.email || '',
               displayName: firebaseUser.displayName || '',
-              role: 'student',
+              role: 'user',
               isVerified: firebaseUser.emailVerified,
             });
           }
