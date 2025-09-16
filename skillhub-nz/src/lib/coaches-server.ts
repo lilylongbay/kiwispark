@@ -87,7 +87,7 @@ export async function getCoachesListServer(params: CoachSearchParams = {}): Prom
       const coach: CoachListItem = {
         id: docSnapshot.id,
         name: userData.displayName || '未知教练',
-        avatar: userData.photoURL,
+        avatar: (userData as any).photoURL,
         bio: userData.bio,
         specialties: coachData.specialties || [],
         experience: coachData.experience || 0,
@@ -97,7 +97,7 @@ export async function getCoachesListServer(params: CoachSearchParams = {}): Prom
         isActive: coachData.isActive,
         contact: {
           email: userData.email,
-          phone: userData.phoneNumber
+          phone: (userData as any).phoneNumber
         }
       };
 
@@ -139,7 +139,7 @@ export async function getCoachesListServer(params: CoachSearchParams = {}): Prom
       return {
         id: coach.id,
         name: user?.displayName || '未知教练',
-        avatar: user?.photoURL,
+        avatar: (user as any)?.photoURL,
         bio: user?.bio,
         specialties: coach.specialties,
         experience: coach.experience,
@@ -149,7 +149,7 @@ export async function getCoachesListServer(params: CoachSearchParams = {}): Prom
         isActive: coach.isActive,
         contact: {
           email: user?.email,
-          phone: user?.phoneNumber
+          phone: (user as any)?.phoneNumber
         }
       };
     });
@@ -308,7 +308,7 @@ export async function getCoachDetailsServer(coachId: string): Promise<CoachDetai
     const coachDetails: CoachDetails = {
       id: coachDoc.id,
       name: userData.displayName || '未知教练',
-      avatar: userData.photoURL,
+      avatar: (userData as any).photoURL,
       bio: userData.bio,
       fullBio: userData.bio, // 可以扩展为更详细的简介
       specialties: coachData.specialties || [],
@@ -353,6 +353,18 @@ export async function getCoachDetailsServer(coachId: string): Promise<CoachDetai
 
     // 获取教练的课程
     const coachCourses = demoCourses.filter(course => course.coachId === coachId);
+    const normalizeLevel = (lvl: string): 'beginner' | 'intermediate' | 'advanced' => {
+      switch ((lvl || '').toLowerCase()) {
+        case 'beginner':
+          return 'beginner'
+        case 'intermediate':
+          return 'intermediate'
+        case 'advanced':
+          return 'advanced'
+        default:
+          return 'beginner'
+      }
+    }
     const courses: CourseListItem[] = coachCourses.slice(0, 6).map(course => ({
       id: course.id,
       title: course.title,
@@ -370,7 +382,7 @@ export async function getCoachDetailsServer(coachId: string): Promise<CoachDetai
       },
       price: course.price,
       duration: course.duration,
-      level: course.level,
+      level: normalizeLevel(course.level as any),
       rating: course.rating || 0,
       totalReviews: course.totalReviews || 0,
       maxStudents: course.maxStudents,
@@ -382,7 +394,7 @@ export async function getCoachDetailsServer(coachId: string): Promise<CoachDetai
     const coachDetails: CoachDetails = {
       id: coach.id,
       name: user.displayName,
-      avatar: user.photoURL,
+      avatar: (user as any).photoURL,
       bio: user.bio,
       fullBio: user.bio,
       specialties: coach.specialties,
@@ -398,7 +410,7 @@ export async function getCoachDetailsServer(coachId: string): Promise<CoachDetai
       courses,
       contact: {
         email: user.email,
-        phone: user.phoneNumber
+        phone: (user as any).phoneNumber
       }
     };
 

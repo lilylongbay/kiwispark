@@ -35,9 +35,10 @@ interface CourseData {
 
 interface ServerCourseCardProps {
   course: CourseData;
+  isFirst?: boolean;
 }
 
-export function ServerCourseCard({ course }: ServerCourseCardProps) {
+export function ServerCourseCard({ course, isFirst = false }: ServerCourseCardProps) {
   const formatPrice = (price: number) => {
     return `¥${price}`;
   };
@@ -71,11 +72,12 @@ export function ServerCourseCard({ course }: ServerCourseCardProps) {
               fill
               className="object-cover"
               sizes="(max-width: 768px) 100vw, (max-width: 1200px) 50vw, 33vw"
+              priority={isFirst}
             />
           ) : (
             <div className="w-full h-full bg-gradient-to-br from-blue-400 to-purple-500 flex items-center justify-center">
               <span className="text-white text-4xl">
-                {course.category.name === '马术' ? '🐎' : '⛳'}
+                {course.category?.name === '马术' ? '🐎' : '⛳'}
               </span>
             </div>
           )}
@@ -83,7 +85,7 @@ export function ServerCourseCard({ course }: ServerCourseCardProps) {
           {/* 分类标签 */}
           <div className="absolute top-3 left-3">
             <span className="inline-flex items-center px-2 py-1 rounded-full text-xs font-medium bg-white/90 text-gray-700">
-              {course.category.name}
+              {course.category?.name ?? '未分类'}
             </span>
           </div>
         </div>
@@ -101,10 +103,10 @@ export function ServerCourseCard({ course }: ServerCourseCardProps) {
           {/* 教练信息 */}
           <div className="flex items-center mb-3">
             <div className="w-6 h-6 bg-gradient-to-br from-blue-400 to-purple-500 rounded-full flex items-center justify-center text-white text-xs font-bold mr-2">
-              {course.coach.name.charAt(0).toUpperCase()}
+              {(course.coach?.name?.charAt(0) ?? '?').toUpperCase()}
             </div>
-            <span className="text-sm text-gray-700">{course.coach.name}</span>
-            {course.coach.location && (
+            <span className="text-sm text-gray-700">{course.coach?.name ?? '未知教练'}</span>
+            {course.coach?.location && (
               <div className="flex items-center ml-2 text-xs text-gray-500">
                 <MapPin className="w-3 h-3 mr-1" />
                 {course.coach.location}

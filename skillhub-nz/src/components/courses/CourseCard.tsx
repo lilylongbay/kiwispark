@@ -73,6 +73,7 @@ export function CourseCard({ course }: CourseCardProps) {
               alt={course.title}
               fill
               className="object-cover group-hover:scale-105 transition-transform duration-200"
+              priority={false}
             />
           ) : (
             <div className="flex items-center justify-center h-full text-gray-400">

@@ -116,8 +116,8 @@ export const demoCourses = [
     level: 'beginner',
     tags: ['马术基础', '马匹护理', '安全知识', '骑术姿势'],
     images: [
-      'https://images.unsplash.com/photo-1578662996442-48f60103fc96?w=800',
-      'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800',
+      'https://picsum.photos/800/600?random=1',
+      'https://picsum.photos/800/600?random=2',
     ],
     isActive: true,
     isPublished: true,
@@ -139,8 +139,8 @@ export const demoCourses = [
     level: 'beginner',
     tags: ['高尔夫基础', '挥杆技巧', '站姿', '握杆'],
     images: [
-      'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800',
-      'https://images.unsplash.com/photo-1593111774240-d529f12cf4b8?w=800',
+      'https://picsum.photos/800/600?random=3',
+      'https://picsum.photos/800/600?random=4',
     ],
     isActive: true,
     isPublished: true,
@@ -162,8 +162,8 @@ export const demoCourses = [
     level: 'advanced',
     tags: ['障碍赛', '跳跃技术', '路线规划', '时间控制'],
     images: [
-      'https://images.unsplash.com/photo-1571019613454-1cb2f99b2d8b?w=800',
-      'https://images.unsplash.com/photo-1553284965-83fd3e82fa5a?w=800',
+      'https://picsum.photos/800/600?random=5',
+      'https://picsum.photos/800/600?random=6',
     ],
     isActive: true,
     isPublished: true,
@@ -185,8 +185,8 @@ export const demoCourses = [
     level: 'intermediate',
     tags: ['短杆技巧', '推杆技术', '切杆', '沙坑球'],
     images: [
-      'https://images.unsplash.com/photo-1593111774240-d529f12cf4b8?w=800',
-      'https://images.unsplash.com/photo-1535131749006-b7f58c99034b?w=800',
+      'https://picsum.photos/800/600?random=7',
+      'https://picsum.photos/800/600?random=8',
     ],
     isActive: true,
     isPublished: true,

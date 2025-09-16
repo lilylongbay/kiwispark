@@ -43,8 +43,8 @@ export function HomeCourseList({ courses }: HomeCourseListProps) {
 
   return (
     <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-8">
-      {courses.map((course) => (
-        <ServerCourseCard key={course.id} course={course} />
+      {courses.map((course, index) => (
+        <ServerCourseCard key={course.id} course={course} isFirst={index === 0} />
       ))}
     </div>
   );

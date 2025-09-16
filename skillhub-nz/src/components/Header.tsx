@@ -33,12 +33,6 @@ export default function Header() {
   const handleSignOut = async () => {
     try {
       await signOut(auth);
-      
-      // 清除session cookie
-      await fetch('/api/session', {
-        method: 'DELETE',
-      });
-      
       router.push('/');
     } catch (error) {
       console.error('登出错误:', error);

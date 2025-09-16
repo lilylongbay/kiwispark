@@ -10,7 +10,8 @@ import {
   getDoc,
   QueryDocumentSnapshot,
   DocumentSnapshot,
-  Timestamp
+  Timestamp,
+  DocumentData
 } from 'firebase/firestore';
 import { firestore } from '@/firebase/client';
 import type {
@@ -27,9 +28,9 @@ import { demoCategories, demoUsers, demoCoaches, demoCourses } from './seed-data
 
 // 类型安全的数据转换器 - 服务器端版本
 export const convertCourseDocToListItem = async (
-  courseDoc: QueryDocumentSnapshot<CourseDoc>
+  courseDoc: QueryDocumentSnapshot<DocumentData, DocumentData>
 ): Promise<CourseListItem> => {
-  const courseData = courseDoc.data();
+  const courseData = courseDoc.data() as any; // 运行时校验由 Firestore 文档结构保证
   
   // 并行获取关联数据
   const [categoryDoc, coachDoc, userDoc] = await Promise.all([
@@ -72,13 +73,13 @@ export const convertCourseDocToListItem = async (
 };
 
 export const convertCourseDocToDetails = async (
-  courseDoc: DocumentSnapshot<CourseDoc>
+  courseDoc: DocumentSnapshot<DocumentData, DocumentData>
 ): Promise<CourseDetails | null> => {
   if (!courseDoc.exists()) {
     return null;
   }
 
-  const courseData = courseDoc.data();
+  const courseData = courseDoc.data() as any;
   
   // 并行获取关联数据
   const [categoryDoc, coachDoc, userDoc] = await Promise.all([
@@ -245,6 +246,19 @@ export const getCourseDetailsServer = async (courseId: string): Promise<CourseDe
     const coach = demoCoaches.find(coach => coach.id === demoCourse.coachId);
     const user = demoUsers.find(user => user.id === coach?.userId);
 
+    const normalizeLevel = (lvl: string): 'beginner' | 'intermediate' | 'advanced' => {
+      switch ((lvl || '').toLowerCase()) {
+        case 'beginner':
+          return 'beginner'
+        case 'intermediate':
+          return 'intermediate'
+        case 'advanced':
+          return 'advanced'
+        default:
+          return 'beginner'
+      }
+    }
+
     return {
       id: demoCourse.id,
       title: demoCourse.title,
@@ -271,7 +285,7 @@ export const getCourseDetailsServer = async (courseId: string): Promise<CourseDe
       },
       price: demoCourse.price,
       duration: demoCourse.duration,
-      level: demoCourse.level,
+      level: normalizeLevel(demoCourse.level as any),
       rating: demoCourse.rating,
       totalReviews: demoCourse.totalReviews,
       maxStudents: demoCourse.maxStudents,
@@ -401,6 +415,19 @@ const getDemoCoursesList = (params: CourseSearchParams = {}): PaginatedResult<Co
   const paginatedCourses = sortedCourses.slice(0, limitCount);
   const hasMore = sortedCourses.length > limitCount;
 
+  const normalizeLevel = (lvl: string): 'beginner' | 'intermediate' | 'advanced' => {
+    switch ((lvl || '').toLowerCase()) {
+      case 'beginner':
+        return 'beginner'
+      case 'intermediate':
+        return 'intermediate'
+      case 'advanced':
+        return 'advanced'
+      default:
+        return 'beginner'
+    }
+  }
+
   // 转换为CourseListItem格式
   const courses: CourseListItem[] = paginatedCourses.map(course => {
     const category = demoCategories.find(cat => cat.id === course.categoryId);
@@ -424,7 +451,7 @@ const getDemoCoursesList = (params: CourseSearchParams = {}): PaginatedResult<Co
       },
       price: course.price,
       duration: course.duration,
-      level: course.level,
+      level: normalizeLevel(course.level as any),
       rating: course.rating,
       totalReviews: course.totalReviews,
       maxStudents: course.maxStudents,

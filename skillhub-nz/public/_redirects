@@ -2,6 +2,9 @@
 # Redirect root to default locale
 / /zh/ 302
 
+# Ensure API routes go to Next.js serverless functions (handled by @netlify/plugin-nextjs)
+/api/* /.netlify/functions/next_api/:splat 200
+
 # Handle locale routes
 /zh/* /zh/:splat 200
 /en/* /en/:splat 200
@@ -10,6 +13,6 @@
 /_next/* /_next/:splat 200
 /static/* /static/:splat 200
 
-# Fallback for SPA routing
-/* /zh/ 200
+# Do NOT add a SPA catch-all fallback here when using Next.js SSR,
+# it will override the plugin-generated SSR/API routes.
 

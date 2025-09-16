@@ -1,7 +1,8 @@
-import { Timestamp } from 'firebase/firestore';
+import type { Timestamp as ClientTimestamp } from 'firebase/firestore';
+import type { Timestamp as AdminTimestamp } from 'firebase-admin/firestore';
 
-// 基础时间戳类型
-export type FirestoreTimestamp = Timestamp;
+// 基础时间戳类型（兼容 Admin 与 Web SDK）
+export type FirestoreTimestamp = ClientTimestamp | AdminTimestamp;
 
 // 用户文档类型
 export interface UserDoc {
@@ -9,7 +10,7 @@ export interface UserDoc {
   email: string;
   displayName: string;
   photoURL?: string;
-  role: 'user' | 'coach' | 'admin' | 'institution';
+  role: 'super_admin' | 'admin' | 'coach' | 'user' | 'suspended' | 'institution';
   bio?: string;
   location?: string;
   phoneNumber?: string;

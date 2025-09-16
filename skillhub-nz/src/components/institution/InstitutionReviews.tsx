@@ -12,7 +12,8 @@ import {
   Clock,
   User,
   BookOpen,
-  Calendar
+  Calendar,
+  X,
 } from 'lucide-react';
 
 interface Review {

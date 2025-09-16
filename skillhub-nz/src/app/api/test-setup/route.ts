@@ -1,29 +1,78 @@
 import { NextRequest, NextResponse } from 'next/server';
+import { getApps, initializeApp, cert } from 'firebase-admin/app';
 import { getFirestore } from 'firebase-admin/firestore';
-import { initializeApp, getApps, cert } from 'firebase-admin/app';
+import { readFileSync, existsSync } from 'node:fs';
 
-// 初始化 Firebase Admin
-if (!getApps().length) {
-  try {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
-  } catch (error) {
-    console.error('Firebase Admin 初始化失败:', error);
+export const runtime = 'nodejs'
+
+function getDbSafe() {
+  if (!getApps().length) {
+    const projectId = process.env.FIREBASE_PROJECT_ID
+    const clientEmail = process.env.FIREBASE_CLIENT_EMAIL
+    const rawKey = process.env.FIREBASE_PRIVATE_KEY
+    const privateKey = rawKey ? (rawKey.startsWith('"') && rawKey.endsWith('"') ? rawKey.slice(1, -1) : rawKey).replace(/\\n/g, '\n') : undefined
+    const gacPathRaw = process.env.GOOGLE_APPLICATION_CREDENTIALS || ''
+    const gacPath = gacPathRaw.startsWith('"') && gacPathRaw.endsWith('"') ? gacPathRaw.slice(1, -1) : gacPathRaw
+
+    let serviceJsonPath: string | undefined = gacPath || undefined
+
+    // 本地开发容错：若环境变量缺失，但默认下载路径存在，则使用之（仅开发环境）
+    const devGuessPath = '/Users/brinny/Downloads/kiwispark-80e5d-firebase-adminsdk-fbsvc-90062c3fbd.json'
+    if (!serviceJsonPath && process.env.NODE_ENV !== 'production' && existsSync(devGuessPath)) {
+      serviceJsonPath = devGuessPath
+    }
+
+    if (serviceJsonPath) {
+      const jsonRaw = readFileSync(serviceJsonPath, 'utf8')
+      const svc = JSON.parse(jsonRaw)
+      initializeApp({
+        credential: cert({
+          projectId: svc.project_id,
+          clientEmail: svc.client_email,
+          privateKey: svc.private_key,
+        })
+      })
+    } else if (projectId && clientEmail && privateKey) {
+      initializeApp({
+        credential: cert({ projectId, clientEmail, privateKey })
+      })
+    } else {
+      throw new Error('Missing Firebase Admin credentials for test-setup')
+    }
   }
+  return getFirestore()
 }
 
-const db = getFirestore();
+async function parseJsonLenient(request: NextRequest): Promise<any> {
+  const contentType = request.headers.get('content-type') || ''
+  const raw = await request.text()
+  if (contentType.includes('application/json')) {
+    try { return JSON.parse(raw) } catch {}
+  }
+  // 尝试 URL-encoded 解析
+  if (contentType.includes('application/x-www-form-urlencoded')) {
+    const obj: Record<string, string> = {}
+    raw.split('&').forEach(kv => {
+      const [k, v] = kv.split('=')
+      if (k) obj[decodeURIComponent(k)] = decodeURIComponent(v || '')
+    })
+    return obj
+  }
+  // 最后尝试直接 JSON.parse
+  try { return JSON.parse(raw) } catch { return {} }
+}
 
 export async function POST(request: NextRequest) {
   try {
-    const { action, userId, email } = await request.json();
+    const payload = await parseJsonLenient(request)
+    console.log('[test-setup] payload:', payload)
+    const action = (payload?.action ?? '').toString().trim()
+    const userId = (payload?.userId ?? '').toString().trim() || undefined
+    const email = (payload?.email ?? '').toString().trim() || undefined
+    console.log('[test-setup] action:', action)
 
     if (action === 'create-test-institution') {
+      const db = getDbSafe()
       // 创建测试教育机构用户
       const testUser = {
         id: 'test-institution-user',
@@ -70,6 +119,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'create-test-coach') {
+      const db = getDbSafe()
       // 创建测试教练
       const coachDoc = {
         userId: userId || 'test-coach-user',
@@ -104,6 +154,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'create-test-course') {
+      const db = getDbSafe()
       // 创建测试课程
       const courseDoc = {
         title: 'React 高级开发课程',
@@ -135,6 +186,7 @@ export async function POST(request: NextRequest) {
     }
 
     if (action === 'create-test-reviews') {
+      const db = getDbSafe()
       // 创建测试评论
       const reviews = [
         {
@@ -191,6 +243,15 @@ export async function POST(request: NextRequest) {
 }
 
 export async function GET() {
+  const gac = process.env.GOOGLE_APPLICATION_CREDENTIALS || ''
+  const envProbe = {
+    hasGOOGLE_APPLICATION_CREDENTIALS: Boolean(gac),
+    GOOGLE_APPLICATION_CREDENTIALS_length: gac ? gac.length : 0,
+    hasFIREBASE_PROJECT_ID: Boolean(process.env.FIREBASE_PROJECT_ID),
+    hasFIREBASE_CLIENT_EMAIL: Boolean(process.env.FIREBASE_CLIENT_EMAIL),
+    hasFIREBASE_PRIVATE_KEY: Boolean(process.env.FIREBASE_PRIVATE_KEY),
+  }
+
   return NextResponse.json({
     message: '测试设置API',
     availableActions: [
@@ -199,6 +260,7 @@ export async function GET() {
       'create-test-course',
       'create-test-reviews'
     ],
+    envProbe,
     usage: {
       createTestInstitution: 'POST /api/test-setup with { "action": "create-test-institution", "email": "your-email@example.com" }',
       createTestCoach: 'POST /api/test-setup with { "action": "create-test-coach", "userId": "coach-user-id" }',

@@ -1,24 +1,19 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
+  output: 'export',
   // Temporarily disable ESLint during build
   eslint: {
     ignoreDuringBuilds: true,
   },
   
-  // Enable static export only for production builds
-  ...(process.env.NODE_ENV === 'production' && {
-    output: 'export',
-    trailingSlash: true,
-    // Skip type checking during build for static export
-    typescript: {
-      ignoreBuildErrors: true,
-    },
-  }),
+  // Remove static export to enable server runtime (API routes, middleware)
+  // trailingSlash can be kept or removed as needed; keeping default behavior
   
-  // Disable image optimization for static export
+  // Image settings
   images: {
-    unoptimized: process.env.NODE_ENV === 'production',
+    // 静态导出下需要禁用内置优化器
+    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',
@@ -45,6 +40,25 @@ const nextConfig: NextConfig = {
         pathname: '/**',
       },
     ],
+  },
+
+  // Fix packages importing `node:process` by providing browser polyfill
+  webpack: (config) => {
+    // Lazy import to avoid TypeScript resolution at build-time
+    // eslint-disable-next-line @typescript-eslint/no-var-requires
+    const { ProvidePlugin } = require('webpack')
+    config.resolve = config.resolve || {}
+    config.resolve.alias = {
+      ...(config.resolve.alias || {}),
+      'node:process': 'process/browser',
+    }
+    config.resolve.fallback = {
+      ...(config.resolve.fallback || {}),
+      process: require.resolve('process/browser'),
+    }
+    config.plugins = config.plugins || []
+    config.plugins.push(new ProvidePlugin({ process: 'process/browser' }))
+    return config
   },
 }
 

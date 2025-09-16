@@ -1,0 +1,15 @@
+# Root Netlify config to enable Next.js SSR for the app under skillhub-nz/
+
+[build]
+  base = "skillhub-nz"
+  command = "npm run build"
+  publish = ".next"
+
+[build.environment]
+  NODE_VERSION = "20"
+
+[[plugins]]
+  package = "@netlify/plugin-nextjs"
+
+
+

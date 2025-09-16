@@ -7,13 +7,15 @@ import { zodResolver } from '@hookform/resolvers/zod';
 import { useTranslation } from 'react-i18next';
 import { 
   signInWithEmailAndPassword, 
-  createUserWithEmailAndPassword
+  createUserWithEmailAndPassword,
+  signInWithPopup,
+  GoogleAuthProvider,
 } from 'firebase/auth';
-import { doc, setDoc } from 'firebase/firestore';
+import { doc, setDoc, getDoc } from 'firebase/firestore';
 import { auth, firestore } from '@/firebase/client';
 import { signinSchema, institutionSignupSchema, type SigninFormData, type InstitutionSignupFormData } from '@/lib/validations';
 import { createUserDoc } from '@/lib/firestore';
-import { Building2, Mail, Lock, User } from 'lucide-react';
+import { Building2, Mail, Lock, User, Phone, MapPin, Globe, Calendar } from 'lucide-react';
 
 type AuthMode = 'signin' | 'signup';
 
@@ -100,24 +102,6 @@ export default function InstitutionAuthForm({ initialMode = 'signin' }: Institut
         await setDoc(doc(firestore, 'institutions', userCredential.user.uid), institutionDoc);
       }
 
-      const user = userCredential.user;
-
-      // 获取ID token
-      const idToken = await user.getIdToken();
-
-      // 发送到session API设置cookie
-      const response = await fetch('/api/session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (!response.ok) {
-        throw new Error('设置会话失败');
-      }
-
       // 重定向到教育机构仪表板
       router.push(`/${i18n.language}/institution/dashboard`);
     } catch (err: any) {
@@ -179,22 +163,6 @@ export default function InstitutionAuthForm({ initialMode = 'signin' }: Institut
         await setDoc(userDocRef, newUserDoc);
       }
 
-      // 获取ID token
-      const idToken = await user.getIdToken();
-
-      // 发送到session API设置cookie
-      const response = await fetch('/api/session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (!response.ok) {
-        throw new Error('设置会话失败');
-      }
-
       // 重定向到教育机构仪表板
       router.push(`/${i18n.language}/institution/dashboard`);
     } catch (err: any) {
@@ -208,7 +176,8 @@ export default function InstitutionAuthForm({ initialMode = 'signin' }: Institut
   const toggleMode = () => {
     setMode(isSignIn ? 'signup' : 'signin');
     setError(null);
-    currentForm.reset();
+    signinForm.reset();
+    signupForm.reset();
   };
 
   return (
@@ -249,7 +218,7 @@ export default function InstitutionAuthForm({ initialMode = 'signin' }: Institut
 
           <form 
             className="space-y-6" 
-            onSubmit={currentForm.handleSubmit(handleEmailAuth)}
+            onSubmit={(isSignIn ? signinForm.handleSubmit(handleEmailAuth) : signupForm.handleSubmit(handleEmailAuth))}
           >
             {/* Institution Name field (only for signup) */}
             {!isSignIn && (
@@ -291,7 +260,7 @@ export default function InstitutionAuthForm({ initialMode = 'signin' }: Institut
                 邮箱地址
               </label>
               <input
-                {...currentForm.register('email')}
+                {...(isSignIn ? signinForm.register('email') : signupForm.register('email'))}
                 type="email"
                 autoComplete="email"
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
@@ -387,7 +356,7 @@ export default function InstitutionAuthForm({ initialMode = 'signin' }: Institut
                 密码
               </label>
               <input
-                {...currentForm.register('password')}
+                {...(isSignIn ? signinForm.register('password') : signupForm.register('password'))}
                 type="password"
                 autoComplete={isSignIn ? 'current-password' : 'new-password'}
                 className="w-full px-4 py-3 border border-gray-300 rounded-lg focus:ring-2 focus:ring-blue-500 focus:border-blue-500 transition-colors"
