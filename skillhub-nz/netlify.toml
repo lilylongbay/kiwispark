@@ -1,9 +1,9 @@
-# Netlify 配置（Next Runtime，启用 SSR / Middleware / API）
+# Netlify 配置（静态导出 output: 'export'）
 
 [build]
   base = "skillhub-nz"
   command = "npm run build"
-  publish = ".next"
+  publish = "out"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -17,7 +17,4 @@
 
 # 注意：FIREBASE_PRIVATE_KEY 等管理端密钥请在 Netlify 控制台设置，勿提交到仓库
 
-[[plugins]]
-  package = "@netlify/plugin-nextjs"
-  
-  # 不需要手动为 /api/* 添加重写，Next 插件会自动处理 API / Middleware / 图片优化
+## 静态导出模式无需 Next.js 插件
