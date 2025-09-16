@@ -27,7 +27,7 @@ export const auth = getAuth(app);
 export const firestore = getFirestore(app);
 
 // 初始化Analytics（仅在浏览器环境中）
-export const analytics = typeof window !== 'undefined' ? getAnalytics(app) : null;
+export const analytics = typeof window !== 'undefined' && !!firebaseConfig.measurementId ? getAnalytics(app) : null;
 
 // 导出getter函数
 export const getAuthInstance = () => auth;

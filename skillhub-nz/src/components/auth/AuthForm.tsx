@@ -76,24 +76,6 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
         await setDoc(doc(firestore, 'users', userCredential.user.uid), userDoc);
       }
 
-      const user = userCredential.user;
-
-      // 获取ID token
-      const idToken = await user.getIdToken();
-
-      // 发送到session API设置cookie
-      const response = await fetch('/api/session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (!response.ok) {
-        throw new Error('设置会话失败');
-      }
-
       // 重定向到首页
       router.push(`/${i18n.language}`);
     } catch (err: any) {
@@ -155,22 +137,6 @@ export default function AuthForm({ initialMode = 'signin' }: AuthFormProps) {
         });
 
         await setDoc(userDocRef, newUserDoc);
-      }
-
-      // 获取ID token
-      const idToken = await user.getIdToken();
-
-      // 发送到session API设置cookie
-      const response = await fetch('/api/session', {
-        method: 'POST',
-        headers: {
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({ idToken }),
-      });
-
-      if (!response.ok) {
-        throw new Error('设置会话失败');
       }
 
       // 重定向到首页
