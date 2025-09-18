@@ -19,7 +19,7 @@ export function ServerPagination({ hasMore, lastDocId }: ServerPaginationProps) 
     if (!lastDocId) return;
     
     // 构建新的URL参数
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
     params.set('startAfter', lastDocId);
     
     // 导航到下一页

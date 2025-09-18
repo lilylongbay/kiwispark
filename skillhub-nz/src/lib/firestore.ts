@@ -45,20 +45,20 @@ export const categoryDocRef = (categoryId: string) => getDocRef<CategoryDoc>('ca
 export const imageDocRef = (imageId: string) => getDocRef<ImageDoc>('images', imageId);
 
 // 数据转换器 - 添加时间戳
-export const withTimestamps = <T extends Record<string, any>>(data: Omit<T, 'createdAt' | 'updatedAt'>): T => {
+export const withTimestamps = <T extends Record<string, any>>(data: T): T & { createdAt: Timestamp; updatedAt: Timestamp } => {
   return {
     ...data,
     createdAt: serverTimestamp() as Timestamp,
     updatedAt: serverTimestamp() as Timestamp,
-  } as T;
+  };
 };
 
 // 数据转换器 - 只添加更新时间戳
-export const withUpdatedAt = <T extends Record<string, any>>(data: Omit<T, 'updatedAt'>): T => {
+export const withUpdatedAt = <T extends Record<string, any>>(data: T): T & { updatedAt: Timestamp } => {
   return {
     ...data,
     updatedAt: serverTimestamp() as Timestamp,
-  } as T;
+  };
 };
 
 // 特定文档类型的数据转换器

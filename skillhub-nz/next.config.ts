@@ -1,7 +1,6 @@
 import type { NextConfig } from 'next'
 
 const nextConfig: NextConfig = {
-  output: 'export',
   // Temporarily disable ESLint during build
   eslint: {
     ignoreDuringBuilds: true,
@@ -12,8 +11,6 @@ const nextConfig: NextConfig = {
   
   // Image settings
   images: {
-    // 静态导出下需要禁用内置优化器
-    unoptimized: true,
     remotePatterns: [
       {
         protocol: 'https',

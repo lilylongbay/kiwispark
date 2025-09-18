@@ -1,4 +1,5 @@
 import { NextRequest, NextResponse } from 'next/server'
+export const dynamic = 'force-static'
 import { adminAuth } from '@/firebase/admin'
 import { cookies } from 'next/headers'
 

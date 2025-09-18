@@ -3,7 +3,7 @@
 [build]
   base = "skillhub-nz"
   command = "npm run build"
-  publish = "out"
+  publish = ".next"
 
 [build.environment]
   NODE_VERSION = "20"
@@ -17,4 +17,5 @@
 
 # 注意：FIREBASE_PRIVATE_KEY 等管理端密钥请在 Netlify 控制台设置，勿提交到仓库
 
-## 静态导出模式无需 Next.js 插件
+[[plugins]]
+  package = "@netlify/plugin-nextjs"

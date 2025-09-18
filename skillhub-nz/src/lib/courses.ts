@@ -10,7 +10,8 @@ import {
   getDoc,
   QueryDocumentSnapshot,
   DocumentSnapshot,
-  Timestamp
+  Timestamp,
+  FirestoreDataConverter
 } from 'firebase/firestore';
 import { firestore } from '@/firebase/client';
 import type {
@@ -24,6 +25,12 @@ import type {
   CourseSearchParams
 } from '@/types/domain';
 import { demoCategories, demoUsers, demoCoaches, demoCourses } from './seed-data';
+
+// Firestore 数据转换器：为 courses 集合提供类型
+const courseConverter: FirestoreDataConverter<CourseDoc> = {
+  toFirestore: (course) => course as any,
+  fromFirestore: (snapshot) => ({ id: snapshot.id, ...(snapshot.data() as any) } as CourseDoc)
+};
 
 // 类型安全的数据转换器
 export const convertCourseDocToListItem = async (
@@ -147,9 +154,10 @@ export const getCoursesList = async (
       search
     } = params;
 
-    // 构建查询条件
+    // 构建查询条件（使用类型转换器）
+    const coursesCollection = collection(firestore, 'courses').withConverter(courseConverter);
     let q = query(
-      collection(firestore, 'courses'),
+      coursesCollection,
       where('isActive', '==', true),
       where('isPublished', '==', true)
     );
@@ -188,7 +196,8 @@ export const getCoursesList = async (
     q = query(q, limit(limitCount + 1)); // 多取一个来判断是否还有更多数据
 
     if (startAfterId) {
-      const startAfterDoc = await getDoc(doc(firestore, 'courses', startAfterId));
+      const startAfterRef = doc(firestore, 'courses', startAfterId).withConverter(courseConverter);
+      const startAfterDoc = await getDoc(startAfterRef);
       if (startAfterDoc.exists()) {
         q = query(q, startAfter(startAfterDoc));
       }
@@ -287,7 +296,7 @@ const getDemoCoursesList = (params: CourseSearchParams = {}): PaginatedResult<Co
       },
       price: course.price,
       duration: course.duration,
-      level: course.level,
+      level: course.level as CourseListItem['level'],
       rating: course.rating,
       totalReviews: course.totalReviews,
       maxStudents: course.maxStudents,
@@ -307,7 +316,7 @@ const getDemoCoursesList = (params: CourseSearchParams = {}): PaginatedResult<Co
 // 获取课程详情
 export const getCourseDetails = async (courseId: string): Promise<CourseDetails | null> => {
   try {
-    const courseDoc = await getDoc(doc(firestore, 'courses', courseId));
+    const courseDoc = await getDoc(doc(firestore, 'courses', courseId).withConverter(courseConverter));
     return await convertCourseDocToDetails(courseDoc);
   } catch (error) {
     console.error('获取课程详情失败，使用演示数据:', error);
@@ -346,7 +355,7 @@ export const getCourseDetails = async (courseId: string): Promise<CourseDetails 
       },
       price: demoCourse.price,
       duration: demoCourse.duration,
-      level: demoCourse.level,
+      level: demoCourse.level as CourseListItem['level'],
       rating: demoCourse.rating,
       totalReviews: demoCourse.totalReviews,
       maxStudents: demoCourse.maxStudents,

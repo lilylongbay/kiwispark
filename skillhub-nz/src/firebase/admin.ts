@@ -10,7 +10,6 @@ let firestoreInstance: Firestore | undefined
 function getEnvPrivateKey(): string | undefined {
   const raw = process.env.FIREBASE_PRIVATE_KEY
   if (!raw) return undefined
-  // 兼容 Netlify / GitHub Actions 的换行转义
   const unquoted = raw.startsWith('"') && raw.endsWith('"') ? raw.slice(1, -1) : raw
   return unquoted.replace(/\\n/g, '\n')
 }
@@ -23,7 +22,6 @@ function ensureAdminApp(): App {
   const privateKey = getEnvPrivateKey()
   const rawGac = process.env.GOOGLE_APPLICATION_CREDENTIALS || ''
   let gacPath = rawGac.startsWith('"') && rawGac.endsWith('"') ? rawGac.slice(1, -1) : rawGac
-  // 本地开发容错：如果未显式设置且默认下载路径存在，则使用该 JSON
   if (!gacPath && process.env.NODE_ENV !== 'production') {
     const devGuess = '/Users/brinny/Downloads/kiwispark-80e5d-firebase-adminsdk-fbsvc-90062c3fbd.json'
     if (existsSync(devGuess)) {
@@ -38,7 +36,6 @@ function ensureAdminApp(): App {
   if (!hasProj || !hasEmail || !hasKey) {
     if (gacPath) {
       try {
-        // 优先直接读取 JSON 文件并用 cert 初始化，避免某些环境下 applicationDefault 未识别
         const jsonRaw = readFileSync(gacPath, 'utf8')
         const svc = JSON.parse(jsonRaw)
         appInstance = (getApps()[0]) ?? initializeApp({
@@ -49,7 +46,6 @@ function ensureAdminApp(): App {
           }),
         })
       } catch (err) {
-        // 退回到 applicationDefault；若失败，抛出更明确的错误信息
         try {
           appInstance = (getApps()[0]) ?? initializeApp({
             credential: applicationDefault(),
@@ -59,7 +55,8 @@ function ensureAdminApp(): App {
         }
       }
     } else {
-      throw new Error('Missing Firebase Admin credentials. Provide GOOGLE_APPLICATION_CREDENTIALS or set FIREBASE_PROJECT_ID, FIREBASE_CLIENT_EMAIL, FIREBASE_PRIVATE_KEY')
+      // 不在此处抛出硬错误，延迟到调用方处理，以避免构建时失败
+      throw new Error('MISSING_ADMIN_CREDENTIALS')
     }
   } else {
     appInstance = (getApps()[0]) ?? initializeApp({
@@ -86,7 +83,3 @@ export function adminFirestore(): Firestore {
   }
   return firestoreInstance
 }
-
-// Also export constants for convenience (do not break existing call-sites)
-export const adminDb: Firestore = getFirestore(ensureAdminApp())
-export const adminAuthConst: Auth = getAuth(ensureAdminApp())

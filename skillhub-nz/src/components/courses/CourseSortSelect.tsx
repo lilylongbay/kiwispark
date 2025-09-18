@@ -13,7 +13,7 @@ export function CourseSortSelect({ currentSort }: CourseSortSelectProps) {
   const { t } = useTranslation('pages');
 
   const handleSortChange = (sortBy: string) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
     params.set('sort', sortBy);
     router.push(`/courses?${params.toString()}`);
   };

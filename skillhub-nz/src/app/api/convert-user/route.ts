@@ -2,25 +2,48 @@ import { NextRequest, NextResponse } from 'next/server';
 import { getFirestore } from 'firebase-admin/firestore';
 import { initializeApp, getApps, cert } from 'firebase-admin/app';
 
-// 初始化 Firebase Admin
-if (!getApps().length) {
+// 标记为静态导出，避免在 output: 'export' 时构建报错
+export const dynamic = 'force-static';
+
+// 惰性、安全地初始化 Firebase Admin，避免在构建期抛错
+function getDbSafe() {
   try {
-    initializeApp({
-      credential: cert({
-        projectId: process.env.FIREBASE_PROJECT_ID,
-        clientEmail: process.env.FIREBASE_CLIENT_EMAIL,
-        privateKey: process.env.FIREBASE_PRIVATE_KEY?.replace(/\\n/g, '\n'),
-      }),
-    });
+    if (!getApps().length) {
+      const projectId = process.env.FIREBASE_PROJECT_ID;
+      const clientEmail = process.env.FIREBASE_CLIENT_EMAIL;
+      const rawPrivateKey = process.env.FIREBASE_PRIVATE_KEY;
+
+      if (!projectId || !clientEmail || !rawPrivateKey) {
+        return null;
+      }
+
+      const privateKey = rawPrivateKey.replace(/\\n/g, '\n');
+
+      initializeApp({
+        credential: cert({
+          projectId,
+          clientEmail,
+          privateKey,
+        }),
+      });
+    }
+    return getFirestore();
   } catch (error) {
     console.error('Firebase Admin 初始化失败:', error);
+    return null;
   }
 }
 
-const db = getFirestore();
-
 export async function POST(request: NextRequest) {
   try {
+    const db = getDbSafe();
+    if (!db) {
+      return NextResponse.json({
+        success: false,
+        message: 'Firebase Admin 未配置，无法执行转换。',
+      }, { status: 503 });
+    }
+
     const { email, institutionData } = await request.json();
 
     if (!email) {

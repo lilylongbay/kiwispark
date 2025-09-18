@@ -28,8 +28,8 @@ if (!isServer) {
       detection: {
         order: ['cookie', 'localStorage', 'navigator', 'htmlTag'],
         caches: ['cookie', 'localStorage'],
+        lookupCookie: 'NEXT_LOCALE',
         cookieOptions: {
-          name: 'NEXT_LOCALE',
           sameSite: 'lax',
           secure: process.env.NODE_ENV === 'production',
         },

@@ -4,6 +4,7 @@ import { getFirestore } from 'firebase-admin/firestore';
 import { readFileSync, existsSync } from 'node:fs';
 
 export const runtime = 'nodejs'
+export const dynamic = 'force-static'
 
 function getDbSafe() {
   if (!getApps().length) {

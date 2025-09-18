@@ -6,6 +6,8 @@ import { z } from 'zod';
 import { Timestamp } from 'firebase-admin/firestore';
 import type { ReplyDoc, ReviewDoc, CourseDoc, CoachDoc } from '@/types/domain';
 
+export const dynamic = 'force-static';
+
 // 回复创建验证schema
 const createReplySchema = z.object({
   reviewId: z.string().min(1, '评论ID是必填项'),

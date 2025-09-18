@@ -128,7 +128,7 @@ export const demoCourses = [
   },
   {
     id: 'course-2',
-    title: '高尔夫挥杆技巧',
+    title: '高尔夫挥杆小技巧',
     description: '学习高尔夫球的基本挥杆技巧，包括站姿、握杆、挥杆动作等。通过专业指导和练习，快速提升你的高尔夫球技。',
     coachId: 'coach-2',
     categoryId: 'cat-2',

@@ -1,5 +1,6 @@
 import { NextRequest, NextResponse } from 'next/server'
-import { adminAuth, adminFirestore, adminDb } from '@/firebase/admin'
+export const dynamic = 'force-static'
+import { adminAuth, adminFirestore } from '@/firebase/admin'
 import { cookies } from 'next/headers'
 
 type Role = 'super_admin' | 'admin' | 'coach' | 'user' | 'suspended'
@@ -15,8 +16,8 @@ export async function GET(_request: NextRequest) {
     const decoded = await adminAuth().verifyIdToken(session)
     const uid = decoded.uid
 
-    // Prefer constant if available, fallback to function
-    const db = adminDb ?? adminFirestore()
+    // 使用惰性函数，避免导入时初始化
+    const db = adminFirestore()
     const snap = await db.collection('users').doc(uid).get()
     const role = (snap.exists ? (snap.data()?.role as Role) : 'user') || 'user'
 

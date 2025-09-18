@@ -21,7 +21,7 @@ export function CourseFilters({ categories, currentParams }: CourseFiltersProps)
   const { t } = useTranslation('pages');
 
   const updateFilter = (key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams.toString());
+    const params = new URLSearchParams(searchParams?.toString());
     
     if (value === null || value === '') {
       params.delete(key);
