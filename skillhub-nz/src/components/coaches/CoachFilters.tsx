@@ -16,7 +16,7 @@ export function CoachFilters({ specialties, currentParams }: CoachFiltersProps) 
   const [isExpanded, setIsExpanded] = useState(false);
 
   const updateFilter = (key: string, value: string | null) => {
-    const params = new URLSearchParams(searchParams?.toString());
+    const params = new URLSearchParams(searchParams?.toString() || '');
     
     if (value === null || value === '') {
       params.delete(key);
